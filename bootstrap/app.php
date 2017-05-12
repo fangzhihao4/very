@@ -41,6 +41,10 @@ $app->singleton(
     App\Exceptions\Handler::class
 );
 
+$app->configureMonologUsing(function($monolog) {
+    
+});
+
 /*
 |--------------------------------------------------------------------------
 | Return The Application
