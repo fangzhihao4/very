@@ -2,7 +2,7 @@
 ```
 server {
     listen       80;
-    server_name  open.verystar.com;
+    server_name  laravel.admin.verystar.com;
     root         /open/public;
     
     location / {
