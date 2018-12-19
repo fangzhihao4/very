@@ -14,8 +14,29 @@ class AliyunUpload
     }
 
     /**
-     * 上传
+     * 上传图片
      * @param $file $_FILES['file']
+     * @param $upload_filename
+     * @return mixed
+     */
+    public function uploadImg($file, $upload_filename){
+        $nonce_str = date("YmdHis").mt_rand(10000000, 99999999);
+        $params = [
+            "app_key"=>$this->app_key,
+            "nonce_str"=>$nonce_str,
+            "filename"=>$upload_filename
+        ];
+        $sign = $this->getSign($params, $this->app_secret);
+        $params["sign"] = $sign;
+        $params['file'] = new \CURLFile(realpath($file['tmp_name']));
+
+        $res = $this->http($this->upload_url, $params, "POST");
+        return $res;
+    }
+
+    /**
+     * 上传文件
+     * @param $file
      * @param $upload_filename
      * @return mixed
      */
