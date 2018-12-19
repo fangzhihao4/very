@@ -30,7 +30,7 @@ class AliyunUpload
         $params["sign"] = $sign;
         $params['file'] = new \CURLFile(realpath($file['tmp_name']));
 
-        $res = $this->http($this->upload_url, $params, "POST");
+        $res = $this->http($this->upload_url.'/uploadimg', $params, "POST");
         return $res;
     }
 
@@ -40,7 +40,7 @@ class AliyunUpload
      * @param $upload_filename
      * @return mixed
      */
-    public function uploadFile($file, $upload_filename){
+    public function uploadFile($file, $upload_filename, $timeout = 10){
         $nonce_str = date("YmdHis").mt_rand(10000000, 99999999);
         $params = [
             "app_key"=>$this->app_key,
@@ -51,7 +51,7 @@ class AliyunUpload
         $params["sign"] = $sign;
         $params['file'] = new \CURLFile(realpath($file['tmp_name']));
 
-        $res = $this->http($this->upload_url, $params, "POST");
+        $res = $this->http($this->upload_url.'/uploadfile', $params, "POST", [], $timeout);
         return $res;
     }
 
@@ -71,7 +71,7 @@ class AliyunUpload
         return hash('sha256',substr($str,0,-1).$secret);
     }
 
-    private function http($url, $data, $method, array $header=[]){
+    private function http($url, $data, $method, array $header=[], $timeout = 5){
         $curl = curl_init(); // 启动一个CURL会话
         curl_setopt($curl, CURLOPT_URL, $url); // 要访问的地址
         if ($method == 'POST') {
@@ -88,7 +88,7 @@ class AliyunUpload
             curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
         }
 
-        curl_setopt($curl, CURLOPT_TIMEOUT, 5); // 设置超时限制防止死循环
+        curl_setopt($curl, CURLOPT_TIMEOUT, $timeout); // 设置超时限制防止死循环
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1); // 获取的信息以文件流的形式返回
         $result = curl_exec($curl); // 执行操作
         curl_close($curl); // 关闭CURL会话
