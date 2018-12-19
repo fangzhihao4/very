@@ -20,7 +20,8 @@ class DemoController extends Controller
     public function uploadAction(){
         $file = $_FILES['file'];
 
-        $res = $this->aliyunUpload->uploadFile($file, "/e/lala.jpg");
+        $file_name = "/admin/laravel/demo/lala.jpg";    // 有意义的文件路径，便于区分
+        $res = $this->aliyunUpload->uploadFile($file, $file_name);
         var_dump($res);
     }
 }
