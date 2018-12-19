@@ -15,6 +15,7 @@ class DemoController extends Controller
         $file = $_FILES['file'];
 
         $upload = new AliyunUpload();
-        $upload->uploadFile($file, "/e/lala.jpg");
+        $res = $upload->uploadFile($file, "/e/lala.jpg");
+        var_dump($res);
     }
 }
