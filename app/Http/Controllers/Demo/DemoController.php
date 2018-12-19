@@ -6,6 +6,12 @@ use App\Lib\AliyunUpload;
 
 class DemoController extends Controller
 {
+    protected $aliyunUpload;
+
+    public function __construct( AliyunUpload $aliyunUpload ){
+        $this->aliyunUpload = $aliyunUpload;
+    }
+
     public function indexAction()
     {
         return view('demo.index');
@@ -14,8 +20,7 @@ class DemoController extends Controller
     public function uploadAction(){
         $file = $_FILES['file'];
 
-        $upload = new AliyunUpload();
-        $res = $upload->uploadFile($file, "/e/lala.jpg");
+        $res = $this->aliyunUpload->uploadFile($file, "/e/lala.jpg");
         var_dump($res);
     }
 }
