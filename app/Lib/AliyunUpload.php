@@ -19,7 +19,7 @@ class AliyunUpload
      * @param $upload_filename
      * @return mixed
      */
-    public function uploadImg($file, $upload_filename){
+    public function uploadImg($file, $upload_filename, $timeout = 3){
         $nonce_str = date("YmdHis").mt_rand(10000000, 99999999);
         $params = [
             "app_key"=>$this->app_key,
@@ -30,7 +30,7 @@ class AliyunUpload
         $params["sign"] = $sign;
         $params['file'] = new \CURLFile(realpath($file['tmp_name']));
 
-        $res = $this->http($this->upload_url."/v1/aliyun/uploadimg", $params, "POST");
+        $res = $this->http($this->upload_url."/v1/aliyun/uploadimg", $params, "POST", [], $timeout);
         return $res;
     }
 
@@ -51,7 +51,7 @@ class AliyunUpload
         $params["sign"] = $sign;
         $params['file'] = new \CURLFile(realpath($file['tmp_name']));
 
-        $res = $this->http($this->upload_url."/v1/aliyun/uploadfile", $params, "POST");
+        $res = $this->http($this->upload_url."/v1/aliyun/uploadfile", $params, "POST", [], $timeout);
         return $res;
     }
 
