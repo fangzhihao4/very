@@ -15,11 +15,12 @@ class AliyunUpload
 
     /**
      * 上传图片
-     * @param $file $_FILES['file']
+     * @param string $file
      * @param $upload_filename
+     * @param int $timeout
      * @return mixed
      */
-    public function uploadImg($file, $upload_filename, $timeout = 3){
+    public function uploadImg(string $file, $upload_filename, $timeout = 3){
         $nonce_str = date("YmdHis").mt_rand(10000000, 99999999);
         $params = [
             "app_key"=>$this->app_key,
@@ -28,7 +29,7 @@ class AliyunUpload
         ];
         $sign = $this->getSign($params, $this->app_secret);
         $params["sign"] = $sign;
-        $params['file'] = new \CURLFile(realpath($file['tmp_name']));
+        $params['file'] = new \CURLFile(realpath($file));
 
         $res = $this->http($this->upload_url."/v1/aliyun/uploadimg", $params, "POST", [], $timeout);
         return $res;
@@ -36,11 +37,12 @@ class AliyunUpload
 
     /**
      * 上传文件
-     * @param $file
+     * @param string $file
      * @param $upload_filename
+     * @param int $timeout
      * @return mixed
      */
-    public function uploadFile($file, $upload_filename, $timeout = 10){
+    public function uploadFile(string $file, $upload_filename, $timeout = 10){
         $nonce_str = date("YmdHis").mt_rand(10000000, 99999999);
         $params = [
             "app_key"=>$this->app_key,
@@ -49,7 +51,7 @@ class AliyunUpload
         ];
         $sign = $this->getSign($params, $this->app_secret);
         $params["sign"] = $sign;
-        $params['file'] = new \CURLFile(realpath($file['tmp_name']));
+        $params['file'] = new \CURLFile(realpath($file));
 
         $res = $this->http($this->upload_url."/v1/aliyun/uploadfile", $params, "POST", [], $timeout);
         return $res;

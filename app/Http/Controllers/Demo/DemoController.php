@@ -21,7 +21,7 @@ class DemoController extends Controller
         $file = $_FILES['file'];
 
         $file_name = "/admin/laravel/demo/lala.jpg";    // 有意义的文件路径，便于区分
-        $res = $this->aliyunUpload->uploadFile($file, $file_name);
+        $res = $this->aliyunUpload->uploadImg($file['tmp_name'], $file_name);
         var_dump($res);
     }
 }
