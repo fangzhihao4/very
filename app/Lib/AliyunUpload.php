@@ -30,7 +30,7 @@ class AliyunUpload
         $params["sign"] = $sign;
         $params['file'] = new \CURLFile(realpath($file['tmp_name']));
 
-        $res = $this->http($this->upload_url, $params, "POST");
+        $res = $this->http($this->upload_url."/v1/aliyun/uploadimg", $params, "POST");
         return $res;
     }
 
@@ -51,7 +51,7 @@ class AliyunUpload
         $params["sign"] = $sign;
         $params['file'] = new \CURLFile(realpath($file['tmp_name']));
 
-        $res = $this->http($this->upload_url, $params, "POST");
+        $res = $this->http($this->upload_url."/v1/aliyun/uploadfile", $params, "POST");
         return $res;
     }
 
