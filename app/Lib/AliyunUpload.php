@@ -80,6 +80,28 @@ class AliyunUpload
     }
 
     /**
+     * 上传base64
+     * @param string $file
+     * @param $upload_filename
+     * @param int $timeout
+     * @return mixed
+     */
+    public function uploadBase64(string $file, $upload_filename, $timeout = 5){
+        $nonce_str = date("YmdHis").mt_rand(10000000, 99999999);
+        $params = [
+            "app_key"=>$this->app_key,
+            "nonce_str"=>$nonce_str,
+            "filename"=>$upload_filename,
+        ];
+        $sign = $this->getSign($params, $this->app_secret);
+        $params["sign"] = $sign;
+        $params['base64_data'] = $file;
+
+        $res = $this->http($this->upload_url."/v1/aliyun/uploadbase64", $params, "POST", [], $timeout);
+        return $res;
+    }
+
+    /**
      * 获取签名
      * @param $data
      * @param $secret
