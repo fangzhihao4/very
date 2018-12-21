@@ -58,6 +58,28 @@ class AliyunUpload
     }
 
     /**
+     * 上传url地址，支持图片和文件
+     * @param string $file
+     * @param $upload_filename
+     * @param int $timeout
+     * @return mixed
+     */
+    public function uploadUrl(string $file, $upload_filename, $timeout = 5){
+        $nonce_str = date("YmdHis").mt_rand(10000000, 99999999);
+        $params = [
+            "app_key"=>$this->app_key,
+            "nonce_str"=>$nonce_str,
+            "filename"=>$upload_filename,
+            "url"=>$file
+        ];
+        $sign = $this->getSign($params, $this->app_secret);
+        $params["sign"] = $sign;
+
+        $res = $this->http($this->upload_url."/v1/aliyun/uploadurl", $params, "POST", [], $timeout);
+        return $res;
+    }
+
+    /**
      * 获取签名
      * @param $data
      * @param $secret
