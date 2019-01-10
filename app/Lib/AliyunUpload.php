@@ -21,7 +21,7 @@ class AliyunUpload
      * @return mixed
      */
     public function uploadImg(string $file, $upload_filename, $timeout = 3){
-        $nonce_str = date("YmdHis").mt_rand(10000000, 99999999);
+        $nonce_str = md5(uniqid(gethostname(), true));
         $params = [
             "app_key"=>$this->app_key,
             "nonce_str"=>$nonce_str,
@@ -43,7 +43,7 @@ class AliyunUpload
      * @return mixed
      */
     public function uploadFile(string $file, $upload_filename, $timeout = 10){
-        $nonce_str = date("YmdHis").mt_rand(10000000, 99999999);
+        $nonce_str = md5(uniqid(gethostname(), true));
         $params = [
             "app_key"=>$this->app_key,
             "nonce_str"=>$nonce_str,
@@ -65,7 +65,7 @@ class AliyunUpload
      * @return mixed
      */
     public function uploadUrl(string $file, $upload_filename, $timeout = 5){
-        $nonce_str = date("YmdHis").mt_rand(10000000, 99999999);
+        $nonce_str = md5(uniqid(gethostname(), true));
         $params = [
             "app_key"=>$this->app_key,
             "nonce_str"=>$nonce_str,
@@ -87,7 +87,7 @@ class AliyunUpload
      * @return mixed
      */
     public function uploadBase64(string $file, $upload_filename, $timeout = 5){
-        $nonce_str = date("YmdHis").mt_rand(10000000, 99999999);
+        $nonce_str = md5(uniqid(gethostname(), true));
         $params = [
             "app_key"=>$this->app_key,
             "nonce_str"=>$nonce_str,
