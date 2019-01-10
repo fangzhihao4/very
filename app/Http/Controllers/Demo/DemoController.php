@@ -20,11 +20,11 @@ class DemoController extends Controller
     public function uploadAction(){
         $file = $_FILES['file'];
 
-        $res = file_get_contents("https://static.verystar.cn/e/zegna/img/video-null.jpg");
-        $base64 = base64_encode($res);
+        $str = "https://static-cdn.verystar.net/e/zegna/img/video-null.jpg";
+
 
         $file_name = "/e/demo/aaa/erwer.jpg";
-        $res = $this->aliyunUpload->uploadBase64($base64, $file_name);
+        $res = $this->aliyunUpload->uploadUrl($str, $file_name);
         var_dump($res);
     }
 }
