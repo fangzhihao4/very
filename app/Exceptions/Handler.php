@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Psr\Log\LoggerInterface;
 
 class Handler extends ExceptionHandler
 {
@@ -32,7 +33,18 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $exception)
     {
-        parent::report($exception);
+//        parent::report($exception);
+        if ($this->shouldntReport($exception)) {
+            return;
+        }
+
+        try {
+            $logger = $this->container->make(LoggerInterface::class);
+        } catch (Exception $ex) {
+            throw $exception; // throw the original exception
+        }
+
+        $logger->error($exception->getMessage()." in ".$exception->getFile().":".$exception->getLine());
     }
 
     /**
