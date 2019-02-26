@@ -8,7 +8,7 @@ class AdminOperationLog
     private $admin_operation_log_app_secret;
 
     public function __construct(){
-        $this->admin_operation_log_url = env("OPEN_E_URL");
+        $this->admin_operation_log_url = env("ADMIN_OPERATION_LOG_URL");
         $this->admin_operation_log_app_key = env("ADMIN_OPERATION_LOG_APP_KEY");
         $this->admin_operation_log_app_secret = env("ADMIN_OPERATION_LOG_APP_SECRET");
     }
