@@ -57,7 +57,7 @@ class AdminOperationLog
         $sign = $this->getSign($create_sign_params, $this->admin_operation_log_app_secret);
         $params["sign"] = $sign;
 
-        return $this->http($this->admin_operation_log_url . "/open/log/admincollect", json_encode($params), "POST");
+        return $this->http($this->admin_operation_log_url . "/log/collect/adminoperationcollect", json_encode($params), "POST");
     }
 
     private function http($url, $data = '', $method = 'GET', $header=[]){
