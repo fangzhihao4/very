@@ -22,7 +22,7 @@ class AdminOperationLog
      * @param string $after_data    操作后的数据内容
      * @return mixed
      */
-    public function adminCollect(string $system_name, string $operation, $target, string $before_data, string $after_data){
+    public function adminCollect(string $system_name, string $operation, $target, string $before_data = "", string $after_data = ""){
         $time = date("Y-m-d H:i:s");
         // 如果不是对接open的品牌系统，请修改这里获取登录用户的信息
         $auth_id = session("user_info")["auth_info"]["auth_id"];
