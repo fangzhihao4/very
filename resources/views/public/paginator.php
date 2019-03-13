@@ -14,26 +14,25 @@
                             <a href="<?php echo $data->previousPageUrl();?>" aria-controls="datatable-fixed-header" data-dt-idx="0" tabindex="0">上一页</a>
                         </li>
 
-                        <?php if( $data->currentPage() <= 5 ){?>
-                            <?php for( $page = 1; $page<=($data->lastPage()>5?5:$data->lastPage()); $page++ ){?>
-                                <li class="paginate_button <?php if($data->currentPage()==$page){echo "active";}?>">
-                                    <a href="<?php echo $data->url($page);?>" aria-controls="datatable-fixed-header" data-dt-idx="<?php echo $page;?>" tabindex="0"><?php echo $page;?></a>
-                                </li>
-                            <?php }?>
-                        <?php }else{?>
-                            <?php if( $data->lastPage() - $data->currentPage() < 5 ){?>
-                                <?php for( $page = ($data->lastPage()-4<1?1:$data->lastPage()-4); $page<=$data->lastPage(); $page++ ){?>
-                                    <li class="paginate_button <?php if($data->currentPage()==$page){echo "active";}?>">
-                                        <a href="<?php echo $data->url($page);?>" aria-controls="datatable-fixed-header" data-dt-idx="<?php echo $page;?>" tabindex="0"><?php echo $page;?></a>
-                                    </li>
-                                <?php }?>
-                            <?php }else{?>
-                                <?php for( $page = ($data->currentPage()-2<1?1:$data->currentPage()-2); $page<($data->currentPage()+3>$data->lastPage()?$data->lastPage():$data->currentPage()+3); $page++ ){?>
-                                    <li class="paginate_button <?php if($data->currentPage()==$page){echo "active";}?>">
-                                        <a href="<?php echo $data->url($page);?>" aria-controls="datatable-fixed-header" data-dt-idx="<?php echo $page;?>" tabindex="0"><?php echo $page;?></a>
-                                    </li>
-                                <?php }?>
-                            <?php }?>
+                        <?php
+                        $page_inator_currentPage = $data->currentPage();
+                        $page_inator_lastPage = $data->lastPage();
+                        $limit = 5;
+                        $end_page_index  =  (ceil($page_inator_currentPage/$limit))*$limit;
+                        if($end_page_index > $page_inator_lastPage){
+                            $end_page_index = $page_inator_lastPage;
+                        }
+
+                        $start_page_index = $end_page_index - $limit + 1;
+                        if($start_page_index < 1){
+                            $start_page_index = 1;
+                        }
+                        ?>
+
+                        <?php for($page = $start_page_index ;$page<=$end_page_index; $page++){?>
+                            <li class="paginate_button <?php if($page_inator_currentPage == $page){echo "active";}?>">
+                                <a href="<?php echo $data->url($page);?>" aria-controls="datatable-fixed-header" data-dt-idx="<?php echo $page;?>" tabindex="0"><?php echo $page;?></a>
+                            </li>
                         <?php }?>
 
                         <li class="paginate_button next <?php if($data->lastPage()==$data->currentPage()){echo "disabled";}?>"" id="datatable-fixed-header_next">
