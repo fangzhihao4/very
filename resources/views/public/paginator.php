@@ -22,13 +22,13 @@
                             <?php }?>
                         <?php }else{?>
                             <?php if( $data->lastPage() - $data->currentPage() < 5 ){?>
-                                <?php for( $page = $data->lastPage() - 4; $page<=$data->lastPage(); $page++ ){?>
+                                <?php for( $page = ($data->lastPage()-4<1?1:$data->lastPage()-4); $page<=$data->lastPage(); $page++ ){?>
                                     <li class="paginate_button <?php if($data->currentPage()==$page){echo "active";}?>">
                                         <a href="<?php echo $data->url($page);?>" aria-controls="datatable-fixed-header" data-dt-idx="<?php echo $page;?>" tabindex="0"><?php echo $page;?></a>
                                     </li>
                                 <?php }?>
                             <?php }else{?>
-                                <?php for( $page = $data->currentPage()-2; $page<$data->currentPage()+3; $page++ ){?>
+                                <?php for( $page = ($data->currentPage()-2<1?1:$data->currentPage()-2); $page<($data->currentPage()+3>$data->lastPage()?$data->lastPage():$data->currentPage()+3); $page++ ){?>
                                     <li class="paginate_button <?php if($data->currentPage()==$page){echo "active";}?>">
                                         <a href="<?php echo $data->url($page);?>" aria-controls="datatable-fixed-header" data-dt-idx="<?php echo $page;?>" tabindex="0"><?php echo $page;?></a>
                                     </li>
@@ -37,7 +37,7 @@
                         <?php }?>
 
                         <li class="paginate_button next <?php if($data->lastPage()==$data->currentPage()){echo "disabled";}?>"" id="datatable-fixed-header_next">
-                            <a href="<?php echo $data->nextPageUrl();?>" aria-controls="datatable-fixed-header" data-dt-idx="<?php echo $data->lastPage();?>" tabindex="0">下一页</a>
+                        <a href="<?php echo $data->nextPageUrl();?>" aria-controls="datatable-fixed-header" data-dt-idx="<?php echo $data->lastPage();?>" tabindex="0">下一页</a>
                         </li>
                         <li class="paginate_button">
                             <a href="<?php echo $data->url($data->lastPage());?>" aria-controls="datatable-fixed-header" data-dt-idx="0" tabindex="0">尾页</a>
