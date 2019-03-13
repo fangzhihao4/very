@@ -7,9 +7,11 @@
         <div class="col-sm-7">
             <div class="dataTables_paginate paging_simple_numbers" id="datatable-fixed-header_paginate">
                 <ul class="pagination">
-                    <li class="paginate_button">
-                        <a href="<?php echo $data->url(1);?>" aria-controls="datatable-fixed-header" data-dt-idx="0" tabindex="0">首页</a>
-                    </li>
+                    <?php if( $data->currentPage() > 1 ){?>
+                        <li class="paginate_button">
+                            <a href="<?php echo $data->url(1);?>" aria-controls="datatable-fixed-header" data-dt-idx="0" tabindex="0">首页</a>
+                        </li>
+                    <?php }?>
                     <li class="paginate_button previous <?php if($data->currentPage()==1){echo "disabled";}?>" id="datatable-fixed-header_previous">
                         <a href="<?php echo $data->previousPageUrl();?>" aria-controls="datatable-fixed-header" data-dt-idx="0" tabindex="0">上一页</a>
                     </li>
