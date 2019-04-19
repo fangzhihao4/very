@@ -52,33 +52,31 @@
                 <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
                     <div class="menu_section">
                         <ul class="nav side-menu">
-                            <li><a href="javascript:void(0)"><i class="fa fa-laptop"></i> 首页 </a></li>
-                            <li><a><i class="fa fa-desktop"></i> 品牌 <span class="fa fa-chevron-down"></span></a>
-                                <ul class="nav child_menu">
-                                    <li><a href="/shop/brand/index" relation="<?php echo url('shop/brand/edit');?>">品牌列表</a></li>
-                                    <li><a href="/shop/brand/add">新增品牌</a></li>
-                                </ul>
+                            <li><a href="/" target="_blank"><i class="fa fa-laptop"></i> 首页</a>
                             </li>
-
-                            <li><a><i class="fa fa-user"></i> 用户 <span class="fa fa-chevron-down"></span></a>
-                                <ul class="nav child_menu">
-                                    <li><a href="/user/user/index" relation="<?php echo url('user/user/edit');?>,<?php echo url('user/auth/relation');?>">用户列表</a></li>
-                                    <li><a href="/user/user/add">添加用户</a></li>
-                                    <li><a href="/user/role/index" relation="<?php echo url('user/roleAuth/relation');?>,<?php echo url('user/role/edit');?>">角色列表</a></li>
-<!--                                    <li><a href="/user/role/add">添加角色</a></li>-->
-                                    <li><a href="/user/auth/index" relation="<?php echo url('user/auth/editauth');?>">用户权限</a></li>
-                                    <li><a href="/user/auth/addauth">新增权限</a></li>
-                                </ul>
-                            </li>
-
-                            <li><a><i class="fa fa-bar-chart-o"></i> 门店 <span class="fa fa-chevron-down"></span></a>
-                                <ul class="nav child_menu">
-                                    <li><a href="/shop/store/index" relation="<?php echo url('shop/store/edit');?>">门店列表</a></li>
-                                    <li><a href="/shop/store/add">新增门店</a></li>
-                                </ul>
-                            </li>
-
-                            <li><a href="/shop/store/storeItem"><i class="fa fa-clone"></i> 对应项 </a></li>
+                            <?php if( session("user_info")['menu_list'] ):?>
+                                <?php $appKey = env('OPEN_KEY');$userId = session('user_info')['user']['user_id'];?>
+                                <?php foreach( session("user_info")['menu_list'] as $k=>$v ):?>
+                                    <?php if( $v['sub'] ):?>
+                                        <li><a><i class="fa <?php echo $v['icon'];?>"></i> <?php echo $v['name'];?> <span class="fa fa-chevron-down"></span></a >
+                                            <ul class="nav child_menu">
+                                                <?php foreach( $v['sub'] as $key=>$val ):?>
+                                                    <?php
+                                                    if (strpos($val['link'],'http') !== false || strpos($val['link'],'https') !== false) {
+                                                        $link = $val['link'] . "?app_key={$appKey}&uid={$userId}";
+                                                    } else {
+                                                        $link = $val['link'][0]=='/'?$val['link']:'/'.$val['link'];
+                                                    }
+                                                    ?>
+                                                    <li><a href="<?php echo $link?>"><?php echo $val['name'];?></a ></li>
+                                                <?php endforeach;?>
+                                            </ul>
+                                        </li>
+                                    <?php else:?>
+                                        <li><a href="<?php echo $v['link'];?>"><i class="fa <?php echo $v['icon'];?>"></i> <?php echo $v['name'];?> </a ></li>
+                                    <?php endif;?>
+                                <?php endforeach;?>
+                            <?php endif;?>
                         </ul>
                     </div>
                 </div>
