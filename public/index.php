@@ -37,6 +37,10 @@ $app = require_once __DIR__.'/../bootstrap/app.php';
 
 $app->loadEnvironmentFrom('.env.'.ENVIRONMENT);
 
+// 增加的代码
+$dotenv = new Dotenv\Dotenv(dirname(__DIR__), '.env.security');
+$dotenv->load();
+
 /*
 |--------------------------------------------------------------------------
 | Run The Application
