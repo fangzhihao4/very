@@ -35,7 +35,7 @@ require __DIR__.'/../bootstrap/autoload.php';
 
 $app = require_once __DIR__.'/../bootstrap/app.php';
 
-$app->loadEnvironmentFrom('.env.'.ENVIRONMENT);
+$app->loadEnvironmentFrom('.env.develop');
 
 
 /*
