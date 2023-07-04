@@ -1,14 +1,8 @@
- <!-- /page content -->
+<!-- /page content -->
 
-        <!-- footer content -->
-        <footer>
-            <!--<div class="pull-right">-->
-            <!--Gentelella - Bootstrap Admin Template by <a href="https://colorlib.com">Colorlib</a>-->
-            <!--</div>-->
-            <div class="clearfix"></div>
-        </footer>
-        <!-- /footer content -->
-    </div>
+<!-- footer content -->
+
+<!-- /footer content -->
 </div>
 <!-- jquery.inputmask -->
 <script src="/js/jquery.inputmask.bundle.min.js"></script>
@@ -18,8 +12,18 @@
 <script src="/js/moment.min.js"></script>
 <script src="/js/daterangepicker.js"></script>
 <script src="/js/validator.js"></script>
-
+<!-- layer -->
+<script src="/plugin/layer/layer.js"></script>
+<script src="/plugin/laydate/laydate.js"></script>
 <script src="/js/custom.js"></script>
+<!-- select2 -->
+<script src="/js/select2.min.js"></script>
 
-</body>
+<script src="/js/public.js?v=1048"></script>
+
+<!-- layer -->
+<script type="text/javascript" src="/plugin/layer/layer.js"></script>
+<link type="text/css" rel="stylesheet" href="/plugin/jedate/skin/jedate.css">
+<script type="text/javascript" src="/plugin/jedate/src/jedate.js"></script>
+
 </html>

@@ -1,0 +1,289 @@
+.scrol::-webkit-scrollbar-track
+{
+    background-color: #F5F5F5;
+    -webkit-box-shadow: inset 0 0 6px #fff;
+}
+/*定义滚动条高宽及背景*/
+.scrol::-webkit-scrollbar
+{
+    width: 0;
+    background-color: #fff;
+}
+/*定义滚动条*/
+.scrol::-webkit-scrollbar-thumb
+{
+    background-color: #fff;
+    border-radius: 0;
+}
+
+.mobile_content{
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    margin-bottom:10px;
+    background: #fff;
+    /*padding-bottom: 10px;*/
+    /*border: 1px solid #c1b8b8;*/
+}
+
+.mobile_content div{
+    padding: 0;
+    margin: 0;
+}
+
+.scrol{
+    /*min-height: 100px;*/
+    height: auto;
+    /*overflow-y: scroll;*/
+    /*overflow-x: hidden;*/
+    width:100%;
+    padding-bottom: 10px;
+}
+
+.mobile_top{
+    width: 100%;
+    height:70px;
+    background-image: url(../img/mobile1_top.png);
+    background-size:100% 100%;
+    border-bottom: 1px solid #c1b8b8;
+}
+
+.mpmall-model.text .child{
+    text-align: center;
+    display: block;
+    color: black;
+    padding: 10px;
+}
+
+ueditor{
+    display: block;
+    padding: 10px;
+}
+#ifram{
+    margin-top: 20px;
+    border: 1px solid;
+}
+
+.mpmall-model img[src=""], .mpmall-model img:not([src]){
+
+    filter:alpha(opacity=0);       /* IE */
+    -moz-opacity:0;              /* 老版Mozilla */
+    -khtml-opacity:0;
+    opacity: 0;
+}
+
+.mpmall-model:hover{
+    border: 1px dashed #5cb85c;
+}
+
+.mpmall-model{
+    /*z-index: 100;*/
+    min-height: 20px;
+    width: 100%;
+    margin: 10px;
+    border: 1px dashed transparent;
+    position: relative;
+    word-wrap: break-word;
+}
+
+.mpmall-model .child:nth-child(2){
+    display: block;
+    z-index: 10;
+    position: relative;
+    width: 100%;
+    height: auto;
+    min-height: 20px;
+}
+
+.mpmall-model title,ueditor{
+    padding: 10px;
+}
+
+.mpmall-model img,video{
+    padding: 10px 0;
+}
+
+.mpmall-model :nth-child(1){
+    z-index: 11;
+}
+
+.mpmall-model.active{
+    border: 1px solid #5cb85c;
+}
+
+.mpmall-model .small{
+    font-size: 12px;
+}
+.mpmall-model .middle{
+    font-size: 14px;
+}
+.mpmall-model .big{
+    font-size: 18px;
+}
+
+.mpmall-model .n_product img{
+    float: left;
+    width: 100px;
+    height: 100px;
+}
+
+.mpmall-model .n_product ptitle{
+    display: block;
+    padding-left: 25px;
+    margin-top: 10px;
+    float: left;
+    color: #000;
+    height: 50px;
+    width: 240px;
+    font-size: 18px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+}
+
+.mpmall-model .collection{
+    float: left;
+    margin-left: 40px;
+    color: #609701;
+}
+
+.mpmall-model .cart{
+    float: right;
+    margin-right: 40px;
+    color: #609701;
+}
+
+.model-close{
+    display: block;
+    height: 20px;
+    /*width: 100%;*/
+    text-align: right;
+    top: -11px;
+    line-height: 16px;
+    color: #d43f3a;
+    font-size: 18px;
+    right: -11px;
+    position: absolute;
+}
+.model-close:hover{
+    font-size: 20px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.model-close div{
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    border-radius: 10px;
+    line-height: 19px;
+    background: red;
+    color: #fff;
+    font-size: 14px;
+    float: right;
+    position: relative;
+    display: none;
+    margin-right: 2px;
+}
+.ueditor,.ueditor img{
+    width: 100%;
+    height: auto;
+}
+
+#plus{
+    width: 100%;
+    height: 150px;
+    font-weight: normal;
+    text-align: center;
+    color: #169F85;
+    border-top: 1px solid #c1b8b8;
+    overflow: hidden;
+}
+#plus font{
+    line-height: 150px;
+    font-size: 30px;
+}
+#plus #btn-group{
+    line-height: 38px;
+    margin-top: 50px;
+}
+
+.mobile_index{
+    border: 1px solid #c1b8b8;
+    box-shadow: 3px 3px 4px #aaaaaa;
+}
+
+multi_img .broadcast{
+    width: 356px;
+    height: 356px;
+}
+
+multi_img .tb-list ul li{
+    background-size:375px 100%;
+}
+
+multi_img .img_list{
+    display: none;
+}
+
+/**
+ckeditor 样式
+ */
+.marker-blue, .marker-pink, .marker-green, .marker-yellow, .pen-green, .pen-red, .pen-black {
+    background-color: transparent;
+}
+
+.marker-blue{
+    color: #72cdfd;
+}
+.marker-pink{
+    color: #fc7999;
+}
+.marker-green{
+    color: #63f963;
+}
+.marker-yellow{
+    color: #fdfd77;
+}
+.pen-green{
+    color: #180;
+}
+.pen-red{
+    color: #e91313;
+}
+.pen-black{
+    color: #000000;
+}
+.pen-rewards_blue{
+    color: #2196E3;
+}
+
+.pen-coral{
+    color: #E96F53;
+}
+
+.pen-sunshine{
+    color: #A99029;
+}
+
+.pen-bright_magenta{
+    color: #D61753;
+}
+
+.pen-gold_elite{
+    color: #8C7237;
+}
+
+.text-big {
+    font-size: 1.4em;
+}
+
+.text-tiny {
+    font-size: .7em;
+}
+.text-small {
+    font-size: .85em;
+}
+.text-huge {
+    font-size: 1.8em;
+}
