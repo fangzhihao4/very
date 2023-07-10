@@ -193,6 +193,9 @@ class HangController extends Controller
             if (!empty($goods_total_price) && ($goods_total_price != 0) ){
                 $common_data["total_product_price"] = $goods_total_price;
             }
+            $common_data["warehouse_name"] = "无锡电商牛奶仓";
+            $common_data["total_receivable"] = $common_data["total_product_price"];
+            $common_data["product_price"] = $goods_price;
 
             $store_data["original_order_number"] = $common_data["original_order_number"];
 

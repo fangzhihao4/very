@@ -145,7 +145,12 @@ class HeadController extends Controller
             $logic_number_value = $worksheet->getCellByColumnAndRow($logic_number_i, $row)->getValue(); //物流单号
             $order_value = $worksheet->getCellByColumnAndRow($order_number_i, $row)->getValue(); //原始单号
 
-            if ($order_value) {
+            $order_head = substr($order_value,0,2);
+            if ($order_head == "LP"){
+                $order_value =substr($order_value, 2, strlen($order_value));
+            }
+
+            if (!empty($order_value)) {
                 $this->updateOrder($order_value, $logic_name_value, $logic_number_value);
             }
         }
@@ -194,11 +199,18 @@ class HeadController extends Controller
             $j = $i + 2; //从表格第2行开始
             $row_excel = 2;
             $data_arr = (array)$all_info[$i];
-            $name_store = $data_arr["store_name"];
+            $name_store = "牛奶分销";
+//            $name_store = $data_arr["store_name"];
             $worksheet->setCellValueByColumnAndRow(1, $j, $name_store);
             foreach ($table_filed_arr as $key_filed => $value_filed) {
                 $filed_name = $value_filed["table_field_name"];
-                $worksheet->setCellValueByColumnAndRow($row_excel, $j, $data_arr[$filed_name]);
+
+                $value_value = !empty($data_arr[$filed_name]) ? $data_arr[$filed_name] : "";
+
+                if ($filed_name == "original_order_number"){
+                    $value_value = !empty($data_arr[$filed_name]) ? "LP".$data_arr[$filed_name] : "";
+                }
+                $worksheet->setCellValueByColumnAndRow($row_excel, $j, $value_value);
                 $row_excel++;
             }
         }

@@ -13,7 +13,7 @@
                 <ul class="nav nav-pills">
                     <li>
                         <input type="file" onchange="batchUploadStoreInfo(this,'/tuan/batchUploadStoreInfo')"
-                               style="position: absolute;opacity: 0;cursor: pointer;width: 100px;margin-top: -40px;height: 35px;">
+                               style="position: absolute;opacity: 0;cursor: pointer;width: 100px;height: 35px;">
                         <button type="button" class="btn btn-danger"><i class="fa fa-upload"></i>批量导入</button>
                     </li>
                 </ul>
