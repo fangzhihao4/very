@@ -88,7 +88,7 @@ class TuanController extends Controller
         }catch (\Exception $exception){
             $error = [
                 "name" => "上传胖奶油团长店铺excel错误",
-                "message" => $exception,
+                "message" => substr($exception,0, 2000),
                 "create_time" => date('Y-m-d H:i:s'),
                 "update_time" => date('Y-m-d H:i:s')
             ];
