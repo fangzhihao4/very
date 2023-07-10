@@ -4,7 +4,11 @@
 <div class="right_col" role="main">
     <div class="x_panel">
         <div class="x_title">
-            <h2>杭州店铺</h2>
+            <h2>小红帽-店铺</h2>
+
+<!--            <div class="">-->
+<!--                <a style="float: right" href="/hang/downloadFile" style="color: #00a0e9">点击下载上传示例</a>-->
+<!--            </div>-->
             <div class="clearfix"></div>
         </div>
 
@@ -13,7 +17,7 @@
                 <ul class="nav nav-pills">
                     <li>
                         <input type="file" onchange="batchUploadStoreInfo(this,'/hang/batchUploadStoreInfo')"
-                               style="position: absolute;opacity: 0;cursor: pointer;width: 100px;margin-top: -40px;height: 35px;">
+                               style="position: absolute;opacity: 0;cursor: pointer;width: 100px;height: 35px;">
                         <button type="button" class="btn btn-danger"><i class="fa fa-upload"></i>批量导入</button>
                     </li>
                 </ul>

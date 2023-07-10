@@ -4,7 +4,9 @@
 namespace App\Http\Controllers;
 
 
+use App\Http\service\CommonService;
 use App\Models\CommonModel;
+use App\Models\GoodsInfoModel;
 use App\Models\OrderFiledNameModel;
 use App\Models\OrderUploadModel;
 use Illuminate\Support\Facades\DB;
@@ -13,16 +15,19 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 class HangController extends Controller
 {
     protected $commonModel;
+    protected $commonService;
     private $user_no = 10001;
+    private $user_name = "小红帽";
 
-    public function __construct(CommonModel $commonModel)
+    public function __construct(CommonModel $commonModel, CommonService  $commonService)
     {
         $this->commonModel = $commonModel;
+        $this->commonService = $commonService;
     }
 
     public function indexAction()
     {
-        $list = $this->getListPage(["user_no" => 10001], [["id", "desc"]]);
+        $list = $this->getListPage(["user_no" => $this->user_no], [["id", "desc"]]);
         return view('hang/index', ["list" => $list]);
     }
 
@@ -70,21 +75,22 @@ class HangController extends Controller
             return response()->jsonFormat(1003, '上传文件异常，请稍后重试');
         }
         $data_upload = [
-            "user_no" => 10001,
+            "user_no" => $this->user_no,
             "type" => 1,
             "name" => $file_name,
             "status" => 1,
             "create_time" => date('Y-m-d H:i:s'),
             "update_time" => date('Y-m-d H:i:s')
         ];
-        $id = $this->commonModel->addRowReturnId("order_upload", $data_upload);
-        $this->readExcel($tmp_url, $file_suffix, 10001, $id);
-
-        unlink($tmp_url);
-        $file_data = isset($return_file['data']) ? $return_file['data'] : '';
-        if (empty($return_file) || empty($file_data)) {
-            return response()->jsonFormat(1003, '上传文件异常1，请稍后重试');
+        try {
+            $id = $this->commonModel->addRowReturnId("order_upload", $data_upload);
+            $this->readExcel($tmp_url, $file_suffix, $this->user_no, $id);
+        }catch (\Exception $exception){
+            $this->commonService->delDirAndFile($tmp_url,true);
+            return response()->jsonFormat(10003, "上传excel或解析excel异常，请确定excel后重试");
         }
+        unlink($tmp_url);
+        $this->commonService->delDirAndFile($tmp_url,true);
         return response()->jsonFormat(200, "上传成功");
 
     }
@@ -114,15 +120,22 @@ class HangController extends Controller
         }
 
         $campaignsBannerInfo = OrderFiledNameModel::query()
-            ->where('user_no', "10001")
+            ->where('user_no', $this->user_no)
             ->orderBy("sort")
             ->get()
             ->toArray();
+
+        $goods_list = GoodsInfoModel::query()
+            ->where('type', 1)
+            ->get()
+            ->toArray();
+
+        $price_list = array_column($goods_list, NULL, 'goods_sku');
         $data_list = array_column($campaignsBannerInfo, NULL, 'excel_field_name');
         $name_arr = [];
         for ($i = 1; $i <= $highestColumnIndex; $i++) {
             $name = $worksheet->getCellByColumnAndRow($i, 1)->getValue();
-            if ($name && $data_list[$name]) {
+            if (!empty($name) && !empty($data_list[$name])) {
                 $name_arr[$i] = $name;
             }
         }
@@ -133,18 +146,31 @@ class HangController extends Controller
             $store_data = [];
             $common_data["upload_id"] = $upload_id;
             $common_data["user_no"] = $user_no;
-            $common_data["store_name"] = "杭州";
+            $common_data["store_name"] = $this->user_name;
             $common_data["create_time"] = date('Y-m-d H:i:s');
             $common_data["update_time"] = date('Y-m-d H:i:s');
+            $common_data["status"] = 1;
 
             $store_data["upload_id"] = $upload_id;
             $store_data["user_no"] = $user_no;
+
+            $goods_total_price = 0;
+            $goods_price = 0;
+            $goods_num = 0;
             foreach ($name_arr as $key_i => $value_name) {
                 $table_name_data = $data_list[$value_name];
                 if (!$table_name_data) {
                     continue;
                 }
+
                 $value = $worksheet->getCellByColumnAndRow($key_i, $row)->getValue(); //姓名
+                if ('SKU自编码' == $value_name){
+                    $goods_price = !empty($price_list[$value]) ? $price_list[$value]["price"] : 0;
+                }
+                if ('SKU数量' == $value_name){
+                    $goods_num = $value;
+                }
+
                 $common_data["sort"] = $row;
                 if ($table_name_data["type"] == 1) {
                     $common_data[$table_name_data["table_field_name"]] = $value;
@@ -152,19 +178,23 @@ class HangController extends Controller
                     $store_data[$table_name_data["table_field_name"]] = $value;
                 }
             }
+
+            if (!empty($goods_num) && !empty($goods_price)){
+                $goods_total_price = $goods_num * $goods_price;
+            }
+            $common_data["total_product_price"] = "";
+            if (!empty($goods_total_price) && ($goods_total_price != 0) ){
+                $common_data["total_product_price"] = $goods_total_price;
+            }
+
             $store_data["original_order_number"] = $common_data["original_order_number"];
 
             array_push($common_data_arr, $common_data);
             array_push($store_data_arr, $store_data);
-//            $namess = $worksheet->getCellByColumnAndRow(1, $row)->getValue(); //姓名
-//            $chinese = $worksheet->getCellByColumnAndRow(2, $row)->getValue(); //语文
-//            $maths = $worksheet->getCellByColumnAndRow(3, $row)->getValue(); //数学
-//            $english = $worksheet->getCellByColumnAndRow(4, $row)->getValue(); //外语
         }
-//        DB::beginTransaction();
+
         $this->commonModel->addRow("order_list", $common_data_arr);
         $this->commonModel->addRow("order_hang", $store_data_arr);
-//        DB::rollBack();
 
     }
 
@@ -183,7 +213,7 @@ class HangController extends Controller
         $worksheet->setTitle($name);
 
         $table_filed_arr = OrderFiledNameModel::query()
-            ->where('user_no', "10001")
+            ->where('user_no', $this->user_name)
             ->orderBy("sort")
             ->get()
             ->toArray();
@@ -246,6 +276,28 @@ class HangController extends Controller
         $writer->save('php://output');
     }
 
+
+    public function downloadFileAction()
+    {
+        //文件路径
+        $fileurl = dirname(dirname(dirname(dirname(__FILE__)))) . "/pubulic/exm/杭州店铺.xlsx";
+        $filename = "杭州店铺.xlsx";
+//        var_export( dirname(dirname(dirname(dirname(__FILE__)))));exit;
+
+
+        //打开服务器文件（返回文件流）
+        $file = fopen($fileurl, 'r');
+
+        header('Content-Type: application/octet-stream'); //设置下载内容类型
+        header('Content-Length: ' . filesize($fileurl)); //设置下载内容长度
+        header('Content-Disposition: attachment; filename=' . $filename); //设置从服务器下载的本地文件名
+
+        //输出 读区到的文件内容 （读文件流）
+        echo fread($file, filesize($fileurl));
+
+        //关闭服务器文件
+        fclose($file);
+    }
 
     public function getOrderList(array $where)
     {

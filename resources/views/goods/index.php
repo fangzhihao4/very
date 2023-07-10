@@ -1,23 +1,17 @@
 <?php echo view('public/layout_header'); ?>
 
 <meta name="csrf-token" content="<?php echo csrf_token(); ?>">
-<div class="right_col" role="main">
+<div class="right_col" role="main" role="main" style="min-height: 1162px;">
     <div class="x_panel">
         <div class="x_title">
-            <h2>胖奶油团长</h2>
-            <div class="clearfix"></div>
-        </div>
+            <h2>商品管理</h2>
 
-        <div>
-            <form action="<?php echo url('/tuan/index'); ?>" class="form-inline" method="get">
-                <ul class="nav nav-pills">
-                    <li>
-                        <input type="file" onchange="batchUploadStoreInfo(this,'/tuan/batchUploadStoreInfo')"
-                               style="position: absolute;opacity: 0;cursor: pointer;width: 100px;margin-top: -40px;height: 35px;">
-                        <button type="button" class="btn btn-danger"><i class="fa fa-upload"></i>批量导入</button>
-                    </li>
-                </ul>
-            </form>
+            <div class="">
+                <a href="/goods/detail">
+                    <input type="button" style="float: right" class=" col-sm-1 btn btn-success" value="新增商品">
+                </a>
+            </div>
+            <div class="clearfix"></div>
         </div>
         <br>
         <div class="x_content">
@@ -25,8 +19,9 @@
                 <table id="datatable-checkbox" class="table table-striped table-bordered bulk_action">
                     <thead>
                     <th>*</th>
-                    <th>文件名称</th>
-                    <th>上传时间</th>
+                    <th>商品名称</th>
+                    <th>店铺</th>
+                    <th>价格</th>
                     <th>更新时间</th>
                     <th>操作</th>
                     </thead>
@@ -35,13 +30,12 @@
                     <?php foreach ($list as $k => $v) { ?>
                         <tr>
                             <td><?php echo !empty($v->id) ? $v->id : ''; ?></td>
-                            <td><?php echo !empty($v->name) ? $v->name : ''; ?></td>
-                            <td><?php echo !empty($v->create_time) ? $v->create_time : ''; ?></td>
+                            <td><?php echo !empty($v->goods_name) ? $v->goods_name : ''; ?></td>
+                            <td><?php echo !empty($v->type) && !empty($type) ? $type[$v->type] : '其他'; ?></td>
+                            <td><?php echo !empty($v->price) ? $v->price : ''; ?></td>
                             <td><?php echo !empty($v->update_time) ? $v->update_time : ''; ?></td>
-                            <td>
-                                <button type="button" onclick="javascript:location.href='/tuan/download?upload_id=' + <?php echo !empty($v->id) ? $v->id : ''; ?>"
-                                        class="btn btn-info"><i class="fa fa-file-excel-o"></i> 导出excel
-                                </button>
+                            <td><a class="btn btn-xs btn-primary"
+                                   href="/goods/detail?id=<?php echo $v->id; ?>">修改</a>
                             </td>
                         </tr>
                     <?php } ?>
@@ -99,9 +93,9 @@
 
     function handleAjaxResponse(res) {
         if (res.retcode == 200) {
-            alertPrompt(res.msg, 6, '/tuan/index');
+            alertPrompt(res.msg, 6, '/hang/index');
         } else {
-            alertPrompt(res.msg, 5, '/tuan/index');
+            alertPrompt(res.msg, 5, '/hang/index');
         }
     }
 

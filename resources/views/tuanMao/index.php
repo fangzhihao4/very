@@ -4,16 +4,16 @@
 <div class="right_col" role="main">
     <div class="x_panel">
         <div class="x_title">
-            <h2>胖奶油团长</h2>
+            <h2>猫家严选</h2>
             <div class="clearfix"></div>
         </div>
 
         <div>
-            <form action="<?php echo url('/tuan/index'); ?>" class="form-inline" method="get">
+            <form action="<?php echo url('/tuanMao/index'); ?>" class="form-inline" method="get">
                 <ul class="nav nav-pills">
                     <li>
-                        <input type="file" onchange="batchUploadStoreInfo(this,'/tuan/batchUploadStoreInfo')"
-                               style="position: absolute;opacity: 0;cursor: pointer;width: 100px;margin-top: -40px;height: 35px;">
+                        <input type="file" onchange="batchUploadStoreInfo(this,'/tuanMao/batchUploadStoreInfo')"
+                               style="position: absolute;opacity: 0;cursor: pointer;width: 100px;height: 35px;">
                         <button type="button" class="btn btn-danger"><i class="fa fa-upload"></i>批量导入</button>
                     </li>
                 </ul>
@@ -39,7 +39,7 @@
                             <td><?php echo !empty($v->create_time) ? $v->create_time : ''; ?></td>
                             <td><?php echo !empty($v->update_time) ? $v->update_time : ''; ?></td>
                             <td>
-                                <button type="button" onclick="javascript:location.href='/tuan/download?upload_id=' + <?php echo !empty($v->id) ? $v->id : ''; ?>"
+                                <button type="button" onclick="javascript:location.href='/tuanKun/download?upload_id=' + <?php echo !empty($v->id) ? $v->id : ''; ?>"
                                         class="btn btn-info"><i class="fa fa-file-excel-o"></i> 导出excel
                                 </button>
                             </td>
@@ -99,9 +99,9 @@
 
     function handleAjaxResponse(res) {
         if (res.retcode == 200) {
-            alertPrompt(res.msg, 6, '/tuan/index');
+            alertPrompt(res.msg, 6, '/tuanMao/index');
         } else {
-            alertPrompt(res.msg, 5, '/tuan/index');
+            alertPrompt(res.msg, 5, '/tuanMao/index');
         }
     }
 

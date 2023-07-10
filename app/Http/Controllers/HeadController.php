@@ -4,9 +4,9 @@
 namespace App\Http\Controllers;
 
 
+use App\Http\service\CommonService;
 use App\Models\CommonModel;
 use App\Models\OrderFiledNameModel;
-use App\Models\OrderListModel;
 use App\Models\OrderUploadModel;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -15,11 +15,13 @@ class HeadController extends Controller
 {
 
     protected $commonModel;
-    private $user_no = 10001;
+    protected $commonService;
+    private $user_no = 10000;
 
-    public function __construct(CommonModel $commonModel)
+    public function __construct(CommonModel $commonModel, CommonService  $commonService)
     {
         $this->commonModel = $commonModel;
+        $this->commonService = $commonService;
     }
 
     public function indexAction()
@@ -49,8 +51,6 @@ class HeadController extends Controller
 
     public function batchUploadStoreInfoAction()
     {
-        $id = request()->input('upload_id');
-
         $file = $_FILES['storeFile'];
         $file_name = $file['name'];
         $file_suffix = substr($file_name, -4);
@@ -74,9 +74,15 @@ class HeadController extends Controller
             return response()->jsonFormat(1003, '上传文件异常，请稍后重试');
         }
 
-        $this->readExcel($tmp_url, $file_suffix, $id);
+        try {
+            $this->readExcel($tmp_url, $file_suffix);
+        }catch (\Exception $exception){
+            $this->commonService->delDirAndFile($tmp_url,true);
+            return response()->jsonFormat(10003, "上传excel或解析excel异常，请确定excel后重试");
+        }
 
         unlink($tmp_url);
+        $this->commonService->delDirAndFile($tmp_url,true);
 //
 //        $file_data = isset($return_file['data']) ? $return_file['data'] : '';
 //        if (empty($return_file) || empty($file_data)) {
@@ -91,7 +97,7 @@ class HeadController extends Controller
      * @throws \PHPExcel_Exception
      * @throws \PHPExcel_Reader_Exception
      */
-    private function readExcel($path, $ext, $upload_id)
+    private function readExcel($path, $ext)
     {
         $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xlsx');
         $reader->setReadDataOnly(TRUE);
@@ -133,30 +139,22 @@ class HeadController extends Controller
             $order_value = $worksheet->getCellByColumnAndRow($order_number_i, $row)->getValue(); //原始单号
 
             if ($order_value) {
-                $this->updateOrder($upload_id, $order_value, $logic_name_value, $logic_number_value);
+                $this->updateOrder($order_value, $logic_name_value, $logic_number_value);
             }
         }
-
-        $this->commonModel->updateRow("order_upload", $upload_id, ["update_time" => date('Y-m-d H:i:s')]);
     }
 
     public function downloadAction()
     {
-        $id = request()->input('upload_id');
-        $upload_info = OrderUploadModel::query()
-            ->where('id', $id)
-            ->limit(1)
-            ->first();
-        $name = $upload_info["name"];
-
         $table_filed_arr = OrderFiledNameModel::query()
             ->where('user_no', "10000")
             ->orderBy("sort")
             ->get()
             ->toArray();
 
-        $all_info = $this->getOrderList(["o.upload_id" => $id]);
+        $all_info = $this->getOrderList(["o.status" => 1]);
 
+        $name = "ERP订单导出" . date('Y-m-d') . ".xlsx";
 
         $spreadsheet = new Spreadsheet();
         $worksheet = $spreadsheet->getActiveSheet();
@@ -182,17 +180,17 @@ class HeadController extends Controller
 
         $worksheet->getStyle('A1:E1')->applyFromArray($styleArray)->getFont()->setSize(14);
 
-        $store_list = $this->storeList();
-        $name_store = !empty($store_list[$upload_info["user_no"]]) ? $store_list[$upload_info["user_no"]] :"未知门店";
+//        $store_list = $this->storeList();
         $len = count($all_info);
         $j = 0;
         for ($i = 0; $i < $len; $i++) {
             $j = $i + 2; //从表格第2行开始
             $row_excel = 2;
+            $data_arr = (array)$all_info[$i];
+            $name_store = $data_arr["store_name"];
             $worksheet->setCellValueByColumnAndRow(1, $j, $name_store);
             foreach ($table_filed_arr as $key_filed => $value_filed) {
                 $filed_name = $value_filed["table_field_name"];
-                $data_arr = (array)$all_info[$i];
                 $worksheet->setCellValueByColumnAndRow($row_excel, $j, $data_arr[$filed_name]);
                 $row_excel++;
             }
@@ -228,19 +226,20 @@ class HeadController extends Controller
         return DB::table('order_list as o')
             ->where($where)
             ->orderBy('o.sort', 'asc')
+            ->limit(5000)
             ->get();
     }
 
 
-    public function updateOrder($upload_id, $order_number, $logic_name, $logic_number)
+    public function updateOrder($order_number, $logic_name, $logic_number)
     {
 
-        $sql = 'update order_list set logistics_company = :logistics_company, logistics_number = :logistics_number,update_time = :update_time where upload_id = :upload_id and original_order_number = :original_order_number';
+        $sql = 'update order_list set logistics_company = :logistics_company, logistics_number = :logistics_number, update_time = :update_time, status = :status where original_order_number = :original_order_number';
         $params = [
             'logistics_company' => $logic_name,
             'logistics_number' => $logic_number,
             'update_time' => date('Y-m-d H:i:s'),
-            'upload_id' => $upload_id,
+            'status' => 2,
             'original_order_number' => $order_number,
         ];
         return DB::update($sql, $params);
@@ -248,9 +247,11 @@ class HeadController extends Controller
 
     public function storeList(){
         return $storeInfo = [
-            10001 => "杭州",
+            10001 => "小红帽",
             10002 => "微店",
-            10003 => "团长"
+            10003 => "胖奶油团长",
+            10004 => "锟仔妈妈团长",
+            10005 => "猫家严选"
         ];
     }
 }

@@ -16,6 +16,17 @@ class BeforeMiddle
      */
     public function handle($request, Closure $next)
     {
+        if( request()->path() == "login/login" ){
+            return $next($request);
+        }
+        if( request()->path() == "login/buttonLogin" ){
+            return $next($request);
+        }
+        if( session("user_info") ) {
+            return $next($request);
+        }else{
+            return response()->redirectTo('login/login');
+        }
         return $next($request);
 //        return response()->redirectTo('common/index');
     }

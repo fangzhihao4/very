@@ -2,8 +2,13 @@
 
 <!-- footer content -->
 
+<footer>
+    <div class="clearfix"></div>
+</footer>
 <!-- /footer content -->
 </div>
+</div>
+<!-- /footer content -->
 <!-- jquery.inputmask -->
 <script src="/js/jquery.inputmask.bundle.min.js"></script>
 <!-- iCheck -->

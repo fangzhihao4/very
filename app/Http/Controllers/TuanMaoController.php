@@ -12,12 +12,12 @@ use App\Models\OrderUploadModel;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
-class TuanController extends Controller
+class TuanMaoController extends Controller
 {
     protected $commonModel;
     protected $commonService;
-    private $user_no = 10003;
-    private $user_name = "胖奶油团长";
+    private $user_no = 10005;
+    private $user_name = "猫家严选";
 
     public function __construct(CommonModel $commonModel, CommonService  $commonService)
     {
@@ -28,7 +28,7 @@ class TuanController extends Controller
     public function indexAction()
     {
         $list = $this->getListPage(["user_no" => $this->user_no], [["id", "desc"]]);
-        return view('tuan/index', ["list" => $list]);
+        return view('tuanMao/index', ["list" => $list]);
     }
 
     public function getListPage(array $where = [], array $order = [])
@@ -82,14 +82,13 @@ class TuanController extends Controller
             "create_time" => date('Y-m-d H:i:s'),
             "update_time" => date('Y-m-d H:i:s')
         ];
-        try{
+        try {
             $id = $this->commonModel->addRowReturnId("order_upload", $data_upload);
             $this->readExcel($tmp_url, $file_suffix, $this->user_no, $id);
         }catch (\Exception $exception){
             $this->commonService->delDirAndFile($tmp_url,true);
             return response()->jsonFormat(10003, "上传excel或解析excel异常，请确定excel后重试");
         }
-
         unlink($tmp_url);
         $this->commonService->delDirAndFile($tmp_url,true);
         return response()->jsonFormat(200, "上传成功");
@@ -299,4 +298,5 @@ class TuanController extends Controller
             ->orderBy('o.sort', 'asc')
             ->get();
     }
+
 }

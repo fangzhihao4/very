@@ -12,23 +12,23 @@ use App\Models\OrderUploadModel;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
-class TuanController extends Controller
+class TuanKunController extends Controller
 {
     protected $commonModel;
     protected $commonService;
-    private $user_no = 10003;
-    private $user_name = "胖奶油团长";
+    public  $user_no = 10004;
 
     public function __construct(CommonModel $commonModel, CommonService  $commonService)
     {
         $this->commonModel = $commonModel;
         $this->commonService = $commonService;
+        $this->user_no = 10004;
     }
 
     public function indexAction()
     {
         $list = $this->getListPage(["user_no" => $this->user_no], [["id", "desc"]]);
-        return view('tuan/index', ["list" => $list]);
+        return view('tuanKun/index', ["list" => $list]);
     }
 
     public function getListPage(array $where = [], array $order = [])
@@ -75,21 +75,15 @@ class TuanController extends Controller
             return response()->jsonFormat(1003, '上传文件异常，请稍后重试');
         }
         $data_upload = [
-            "user_no" => $this->user_no,
+            "user_no" => 10004,
             "type" => 1,
             "name" => $file_name,
             "status" => 1,
             "create_time" => date('Y-m-d H:i:s'),
             "update_time" => date('Y-m-d H:i:s')
         ];
-        try{
-            $id = $this->commonModel->addRowReturnId("order_upload", $data_upload);
-            $this->readExcel($tmp_url, $file_suffix, $this->user_no, $id);
-        }catch (\Exception $exception){
-            $this->commonService->delDirAndFile($tmp_url,true);
-            return response()->jsonFormat(10003, "上传excel或解析excel异常，请确定excel后重试");
-        }
-
+        $id = $this->commonModel->addRowReturnId("order_upload", $data_upload);
+        $this->readExcel($tmp_url, $file_suffix, 10004, $id);
         unlink($tmp_url);
         $this->commonService->delDirAndFile($tmp_url,true);
         return response()->jsonFormat(200, "上传成功");
@@ -148,10 +142,9 @@ class TuanController extends Controller
             $store_data = [];
             $common_data["upload_id"] = $upload_id;
             $common_data["user_no"] = $user_no;
-            $common_data["store_name"] = $this->user_name;
+            $common_data["store_name"] = "微店";
             $common_data["create_time"] = date('Y-m-d H:i:s');
             $common_data["update_time"] = date('Y-m-d H:i:s');
-            $common_data["status"] = 1;
 
             $store_data["upload_id"] = $upload_id;
             $store_data["user_no"] = $user_no;
@@ -299,4 +292,5 @@ class TuanController extends Controller
             ->orderBy('o.sort', 'asc')
             ->get();
     }
+
 }

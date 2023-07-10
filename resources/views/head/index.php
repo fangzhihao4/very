@@ -3,8 +3,28 @@
     <meta name="csrf-token" content="<?php echo csrf_token();?>">
     <div class="right_col" role="main">
         <div class="x_panel">
+            <h2>总店</h2>
+
             <div class="x_title">
-                <h2>总店</h2>
+                <h2>
+                    <form action="<?php echo url('/head/index'); ?>" class="form-inline" method="get">
+                        <ul class="nav nav-pills">
+                            <li>
+                            <li>
+                                <input type="file"  onchange="batchUploadStoreInfo(this,'/head/batchUploadStoreInfo')" style="position: absolute;opacity: 0;cursor: pointer;width: 100px;height: 35px;">
+                                <button type="button" class="btn btn-danger"><i class="fa fa-upload"></i>导入物流订单</button>
+                            </li>
+                            </li>
+                        </ul>
+                    </form>
+                </h2>
+                <h2 style=" float: right">
+                    <button type="button" onclick="javascript:location.href='/head/download'"
+                            class="btn btn-info"><i class="fa fa-file-excel-o"></i> 导出订单excel
+                    </button>
+                </h2>
+
+
                 <div class="clearfix"></div>
             </div>
             <br>
@@ -17,8 +37,6 @@
                         <th>文件名称</th>
                         <th>上传时间</th>
                         <th>更新时间</th>
-                        <th>下载</th>
-                        <th>回传</th>
                         </thead>
 
                         <tbody>
@@ -29,21 +47,6 @@
                                 <td><?php echo !empty($v->name) ? $v->name : ''; ?></td>
                                 <td><?php echo !empty($v->create_time) ? $v->create_time : ''; ?></td>
                                 <td><?php echo !empty($v->update_time) ? $v->update_time : ''; ?></td>
-                                <td>
-                                    <button type="button" onclick="javascript:location.href='/head/download?upload_id=' + <?php echo !empty($v->id) ? $v->id : ''; ?>"
-                                            class="btn btn-info"><i class="fa fa-file-excel-o"></i> 导出excel
-                                    </button>
-                                </td>
-                                <td>
-                                    <form action="<?php echo url('/head/index' );?>" class="form-inline" method="get">
-                                        <ul class="nav nav-pills">
-                                            <li>
-                                                <input type="file"  onchange="batchUploadStoreInfo(this,'/head/batchUploadStoreInfo?upload_id=' + <?php echo $v->id + 1; ?>)" style="position: absolute;opacity: 0;cursor: pointer;width: 100px;margin-top: -40px;height: 35px;">
-                                                <button type="button" class="btn btn-danger"><i class="fa fa-upload"></i>导入excel</button>
-                                            </li>
-                                        </ul>
-                                    </form>
-                                </td>
                             </tr>
                         <?php } ?>
                         </tbody>
