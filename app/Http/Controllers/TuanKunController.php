@@ -17,6 +17,7 @@ class TuanKunController extends Controller
     protected $commonModel;
     protected $commonService;
     public  $user_no = 10004;
+    public $user_name = "锟仔妈妈团长";
 
     public function __construct(CommonModel $commonModel, CommonService  $commonService)
     {
@@ -75,16 +76,27 @@ class TuanKunController extends Controller
             return response()->jsonFormat(1003, '上传文件异常，请稍后重试');
         }
         $data_upload = [
-            "user_no" => 10004,
+            "user_no" => $this->user_no,
             "type" => 1,
             "name" => $file_name,
             "status" => 1,
             "create_time" => date('Y-m-d H:i:s'),
             "update_time" => date('Y-m-d H:i:s')
         ];
-        $id = $this->commonModel->addRowReturnId("order_upload", $data_upload);
-        $this->readExcel($tmp_url, $file_suffix, 10004, $id);
-        unlink($tmp_url);
+        try{
+            $id = $this->commonModel->addRowReturnId("order_upload", $data_upload);
+            $this->readExcel($tmp_url, $file_suffix, $this->user_no, $id);
+        }catch (\Exception $exception){
+            $error = [
+                "name" => "上传锟仔妈妈团长店铺excel错误",
+                "message" => $exception,
+                "create_time" => date('Y-m-d H:i:s'),
+                "update_time" => date('Y-m-d H:i:s')
+            ];
+            $this->commonModel->addRow("error_log",$error);
+            $this->commonService->delDirAndFile($tmp_url,true);
+            return response()->jsonFormat(10003, "上传excel或解析excel异常，请确定excel后重试");
+        }
         $this->commonService->delDirAndFile($tmp_url,true);
         return response()->jsonFormat(200, "上传成功");
 
@@ -142,7 +154,7 @@ class TuanKunController extends Controller
             $store_data = [];
             $common_data["upload_id"] = $upload_id;
             $common_data["user_no"] = $user_no;
-            $common_data["store_name"] = "微店";
+            $common_data["store_name"] = $this->user_name;
             $common_data["create_time"] = date('Y-m-d H:i:s');
             $common_data["update_time"] = date('Y-m-d H:i:s');
 

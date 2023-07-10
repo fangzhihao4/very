@@ -87,6 +87,13 @@ class WeiController extends Controller
             $id = $this->commonModel->addRowReturnId("order_upload", $data_upload);
             $this->readExcel($tmp_url, $file_suffix, $this->user_no, $id);
         }catch (\Exception $exception){
+            $error = [
+                "name" => "上传微店店铺excel错误",
+                "message" => $exception,
+                "create_time" => date('Y-m-d H:i:s'),
+                "update_time" => date('Y-m-d H:i:s')
+            ];
+            $this->commonModel->addRow("error_log",$error);
             $this->commonService->delDirAndFile($tmp_url,true);
             return response()->jsonFormat(10003, "上传excel或解析excel异常，请确定excel后重试");
         }
