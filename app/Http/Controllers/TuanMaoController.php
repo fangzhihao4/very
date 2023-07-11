@@ -251,16 +251,16 @@ class TuanMaoController extends Controller
         }
 
 
-        $styleArray = [
-            'font' => [
-                'bold' => true
-            ],
-            'alignment' => [
-                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-            ],
-        ];
-
-        $worksheet->getStyle('A1:E1')->applyFromArray($styleArray)->getFont()->setSize(14);
+//        $styleArray = [
+//            'font' => [
+//                'bold' => true
+//            ],
+//            'alignment' => [
+//                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+//            ],
+//        ];
+//
+//        $worksheet->getStyle('A1:E1')->applyFromArray($styleArray)->getFont()->setSize(14);
 
         $len = count($all_info);
         $j = 0;

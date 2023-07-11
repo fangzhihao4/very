@@ -223,7 +223,7 @@ class HangController extends Controller
         $worksheet->setTitle($name);
 
         $table_filed_arr = OrderFiledNameModel::query()
-            ->where('user_no', $this->user_name)
+            ->where('user_no', $this->user_no)
             ->orderBy("sort")
             ->get()
             ->toArray();
@@ -237,17 +237,17 @@ class HangController extends Controller
             $row_excel++;
         }
 
-
-        $styleArray = [
-            'font' => [
-                'bold' => true
-            ],
-            'alignment' => [
-                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-            ],
-        ];
-
-        $worksheet->getStyle('A1:E1')->applyFromArray($styleArray)->getFont()->setSize(14);
+//
+//        $styleArray = [
+//            'font' => [
+//                'bold' => true
+//            ],
+//            'alignment' => [
+//                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+//            ],
+//        ];
+//
+//        $worksheet->getStyle('A1:E1')->applyFromArray($styleArray)->getFont()->setSize(14);
 
         $len = count($all_info);
         $j = 0;

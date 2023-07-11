@@ -181,16 +181,16 @@ class HeadController extends Controller
             $row_excel++;
         }
 
-        $styleArray = [
-            'font' => [
-                'bold' => true
-            ],
-            'alignment' => [
-                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-            ],
-        ];
+//        $styleArray = [
+//            'font' => [
+//                'bold' => true
+//            ],
+//            'alignment' => [
+//                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+//            ],
+//        ];
 
-        $worksheet->getStyle('A1:E1')->applyFromArray($styleArray)->getFont()->setSize(14);
+//        $worksheet->getStyle('A1:E1')->applyFromArray($styleArray)->getFont()->setSize(14);
 
 //        $store_list = $this->storeList();
         $len = count($all_info);
