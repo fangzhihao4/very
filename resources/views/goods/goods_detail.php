@@ -63,6 +63,7 @@
                             </div>
                     <label for="card_title_remark" class="col-sm-3 control-label"> </label>
                     <div class="col-sm-6 save" style="margin-top: 5px">
+                        <a  href="/goods/index" type="button" class="col-sm-3 btn btn-primary" >返回</a>
                         <button type="button" class="col-sm-3 btn btn-success" onclick="buttonFrom()">保存</button>
                     </div>
 

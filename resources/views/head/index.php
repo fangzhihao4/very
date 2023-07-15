@@ -35,6 +35,7 @@
                         <th>*</th>
                         <th>店铺</th>
                         <th>文件名称</th>
+                        <th>状态</th>
                         <th>上传时间</th>
                         <th>更新时间</th>
                         </thead>
@@ -45,13 +46,15 @@
                                 <td><?php echo !empty($v->id) ? $v->id : ''; ?></td>
                                 <td><?php echo !empty($v->user_no) ? (!empty($store[$v->user_no]) ? $store[$v->user_no] : $v->user_no) : ''; ?></td>
                                 <td><?php echo !empty($v->name) ? $v->name : ''; ?></td>
+                                <td><?php echo !empty($v->status) ? (!empty($status[$v->status]) ? $status[$v->status] : $v->status) : ''; ?></td>
                                 <td><?php echo !empty($v->create_time) ? $v->create_time : ''; ?></td>
                                 <td><?php echo !empty($v->update_time) ? $v->update_time : ''; ?></td>
                             </tr>
                         <?php } ?>
                         </tbody>
                     </table>
-                    <?php echo view('public/paginator', ['data' => $list]); ?>
+
+                    <?php echo view('public/paginator_size', ['data' => $list]); ?>
                     </table>
                 </div>
             </div>

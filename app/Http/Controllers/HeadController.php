@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Http\service\CommonService;
 use App\Models\CommonModel;
 use App\Models\OrderFiledNameModel;
+use App\Models\OrderListModel;
 use App\Models\OrderUploadModel;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -18,7 +19,7 @@ class HeadController extends Controller
     protected $commonService;
     private $user_no = 10000;
 
-    public function __construct(CommonModel $commonModel, CommonService  $commonService)
+    public function __construct(CommonModel $commonModel, CommonService $commonService)
     {
         $this->commonModel = $commonModel;
         $this->commonService = $commonService;
@@ -27,13 +28,18 @@ class HeadController extends Controller
     public function indexAction()
     {
         $storeInfo = $this->storeList();
+        $statusList = $this->commonService->uploadStatus();
         $list = $this->getListPage([["id", ">", 0]], [["id", "desc"]]);
-        return view('head/index', ["list" => $list, "store" => $storeInfo]);
+        return view('head/index', ["list" => $list, "store" => $storeInfo, "status" => $statusList]);
     }
 
     public function getListPage(array $where = [], array $order = [])
     {
         parse_str($_SERVER['QUERY_STRING'], $query);
+        $pagesize = 10;
+        if (!empty($query["pagesize"]) && in_array((int)$query["pagesize"], [10, 20, 50])) {
+            $pagesize = $query["pagesize"];
+        }
         unset($query['page']);
         $params_uri = $query ? '?' . http_build_query($query) : '';
         $path = parse_url($_SERVER['REQUEST_URI']);
@@ -45,7 +51,7 @@ class HeadController extends Controller
                 $res->orderBy($v[0], $v[1]);
             }
         }
-        $res = $res->paginate(10)->withPath($path["path"] . $params_uri);
+        $res = $res->paginate($pagesize)->withPath($path["path"] . $params_uri);
         return $res;
     }
 
@@ -74,8 +80,12 @@ class HeadController extends Controller
             return response()->jsonFormat(1003, '上传文件异常，请稍后重试');
         }
 
+        $this->readCsv($tmp_url);
+
+
         try {
-            $this->readExcel($tmp_url, $file_suffix);
+//            $this->readExcel($tmp_url, $file_suffix);
+            $this->readCsv($tmp_url);
         }catch (\Exception $exception){
             $error = [
                 "name" => "上传ERP店铺excel错误",
@@ -89,7 +99,7 @@ class HeadController extends Controller
         }
 
         unlink($tmp_url);
-        $this->commonService->delDirAndFile($tmp_url,true);
+        $this->commonService->delDirAndFile($tmp_url, true);
 //
 //        $file_data = isset($return_file['data']) ? $return_file['data'] : '';
 //        if (empty($return_file) || empty($file_data)) {
@@ -106,7 +116,8 @@ class HeadController extends Controller
      */
     private function readExcel($path, $ext)
     {
-        $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xlsx');
+//        $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xlsx');
+        $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('csv');
         $reader->setReadDataOnly(TRUE);
         $spreadsheet = $reader->load($path); //载入excel表格
 
@@ -123,6 +134,8 @@ class HeadController extends Controller
         $logic_name = "物流公司";
         $logic_number = "物流单号";
         $order_number = "原始单号";
+
+        $goods_list = [];
 
         $logic_name_i = 0;
         $logic_number_i = 0;
@@ -145,15 +158,122 @@ class HeadController extends Controller
             $logic_number_value = $worksheet->getCellByColumnAndRow($logic_number_i, $row)->getValue(); //物流单号
             $order_value = $worksheet->getCellByColumnAndRow($order_number_i, $row)->getValue(); //原始单号
 
-            $order_head = substr($order_value,0,2);
-            if ($order_head == "LP"){
-                $order_value =substr($order_value, 2, strlen($order_value));
+            $order_head = substr($order_value, 0, 2);
+            if ($order_head == "LP") {
+                $order_value = substr($order_value, 2, strlen($order_value));
             }
 
             if (!empty($order_value)) {
                 $this->updateOrder($order_value, $logic_name_value, $logic_number_value);
             }
+            array_push($goods_list,$order_value);
         }
+
+        if (!empty($goods_list)) {
+            $upload_ids = OrderListModel::query()
+                ->select("upload_id")
+                ->whereIn("original_order_number", $goods_list)
+                ->groupBy("upload_id")
+                ->get()
+                ->toArray();
+            if (!empty($upload_ids)) {
+                $params_upload = [
+                    "status" => 2,
+                    "update_time" => date('Y-m-d H:i:s')
+                ];
+                OrderUploadModel::query()
+                    ->whereIn("id", $upload_ids)
+                    ->update($params_upload);
+            }
+        }
+
+
+    }
+
+    private function readCsv($filename)
+    {
+        if (empty ($filename)) {
+            return ["code" => 10001, "没有数据"];
+        }
+        $handle = fopen($filename, 'r');
+        $result = $this->input_csv($handle); //解析csv
+        $len_result = count($result);
+        if ($len_result == 0) {
+            return ["code" => 10001, "没有数据"];
+        }
+        $title_count = count($result[0]);
+        $data_values = "";
+        $logic_name_i = 0;
+        $logic_number_i = 0;
+        $order_number_i = 0;
+        $logic_name = "物流公司";
+        $logic_number = "物流单号";
+        $order_number = "原始单号";
+        for ($i_t = 0; $i_t < $title_count; $i_t++) {
+            if ("物流公司" == $result[0][$i_t]) {
+                $logic_name_i = $i_t;
+            }
+            if ("物流单号" == $result[0][$i_t]) {
+                $logic_number_i = $i_t;
+            }
+            if ("原始单号" == $result[0][$i_t]) {
+                $order_number_i = $i_t;
+            }
+        }
+
+        $goods_list = [];
+
+        for ($i = 1; $i < $len_result; $i++) { //循环获取各字段值
+            $logic_name_value = $result[$i][$logic_name_i]; //物流公司
+            $logic_number_value = $result[$i][$logic_number_i]; //物流单号
+            $order_value = $result[$i][$order_number_i]; //原始单号
+
+            $order_head = substr($order_value, 0, 2);
+            if ($order_head == "LP") {
+                $order_value = substr($order_value, 2, strlen($order_value));
+            }
+
+            if (!empty($order_value)) {
+                $this->updateOrder($order_value, $logic_name_value, $logic_number_value);
+            }
+            array_push($goods_list, $order_value);
+
+        }
+
+        if (!empty($goods_list)) {
+            $upload_ids = OrderListModel::query()
+                ->select("upload_id")
+                ->whereIn("original_order_number", $goods_list)
+                ->groupBy("upload_id")
+                ->get()
+                ->toArray();
+            if (!empty($upload_ids)) {
+                $params_upload = [
+                    "status" => 2,
+                    "update_time" => date('Y-m-d H:i:s')
+                ];
+                OrderUploadModel::query()
+                    ->whereIn("id", $upload_ids)
+                    ->update($params_upload);
+            }
+        }
+
+        fclose($handle); //关闭指针
+        return [];
+    }
+
+    function input_csv($handle)
+    {
+        $out = array();
+        $n = 0;
+        while ($data = fgetcsv($handle, 10000)) {
+            $num = count($data);
+            for ($i = 0; $i < $num; $i++) {
+                $out[$n][$i] = $data[$i];
+            }
+            $n++;
+        }
+        return $out;
     }
 
     public function downloadAction()
@@ -199,16 +319,16 @@ class HeadController extends Controller
             $j = $i + 2; //从表格第2行开始
             $row_excel = 2;
             $data_arr = (array)$all_info[$i];
-            $name_store = "牛奶分销";
-//            $name_store = $data_arr["store_name"];
+//            $name_store = "牛奶分销";
+            $name_store = $data_arr["store_name"];
             $worksheet->setCellValueByColumnAndRow(1, $j, $name_store);
             foreach ($table_filed_arr as $key_filed => $value_filed) {
                 $filed_name = $value_filed["table_field_name"];
 
                 $value_value = !empty($data_arr[$filed_name]) ? $data_arr[$filed_name] : "";
 
-                if ($filed_name == "original_order_number"){
-                    $value_value = !empty($data_arr[$filed_name]) ? "LP".$data_arr[$filed_name] : "";
+                if ($filed_name == "original_order_number") {
+                    $value_value = !empty($data_arr[$filed_name]) ? "LP" . $data_arr[$filed_name] : "";
                 }
                 $worksheet->setCellValueByColumnAndRow($row_excel, $j, $value_value);
                 $row_excel++;
@@ -264,7 +384,8 @@ class HeadController extends Controller
         return DB::update($sql, $params);
     }
 
-    public function storeList(){
+    public function storeList()
+    {
         return $storeInfo = [
             10001 => "小红帽",
             10002 => "微店",

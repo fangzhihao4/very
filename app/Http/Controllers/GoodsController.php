@@ -20,12 +20,17 @@ class GoodsController extends Controller
 
     public function indexAction()
     {
+        $store_type = (int)request()->input('store_type', '');
+        $where = [];
+        if (!empty($store_type)){
+            $where["type"] = $store_type;
+        }
         $type = [
             1 => "小红帽",
             2 => "微店",
             3 => "团长"
         ];
-        $list = $this->getListPage([], [["id", "desc"]]);
+        $list = $this->getListPage($where, [["id", "desc"]]);
         return view('goods/index', ["list" => $list, "type" => $type]);
     }
 

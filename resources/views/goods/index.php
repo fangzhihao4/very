@@ -5,7 +5,6 @@
     <div class="x_panel">
         <div class="x_title">
             <h2>商品管理</h2>
-
             <div class="">
                 <a href="/goods/detail">
                     <input type="button" style="float: right" class=" col-sm-1 btn btn-success" value="新增商品">
@@ -15,7 +14,25 @@
         </div>
         <br>
         <div class="x_content">
+
             <div class="table-responsive">
+                <div class="row">
+                    <form action="<?php echo url('/goods/index');?>" class="form-inline form-horizontal" method="get" >
+                        <?php echo csrf_field();?>
+                        <div class="form-group">
+
+                            <label>&nbsp;&nbsp;&nbsp;&nbsp;店铺选择:&nbsp;</label>
+                            <select name="store_type" style="width: 300px;height: 34px;">
+                                <option value="" <?php if(!isset($_GET['store_type']) || empty($_GET["store_type"]) ){echo ' selected';}?> >全部</option>
+                                <option value="1" <?php if(isset($_GET['store_type']) && $_GET['store_type'] == 1 ){echo ' selected';}?> >小红帽</option>
+                                <option value="2" <?php if(isset($_GET['store_type']) && ($_GET['store_type'] == 2)){echo ' selected';}?> >微店</option>
+                                <option value="3" <?php if(isset($_GET['store_type']) && ($_GET['store_type'] == 3)){echo ' selected';}?> >团长</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success" style="margin-bottom:0px;margin-right:0px;" ><i class="fa fa-search"></i> 搜索</button>
+                    </form>
+                </div>
+                <br>
                 <table id="datatable-checkbox" class="table table-striped table-bordered bulk_action">
                     <thead>
                     <th>*</th>
@@ -31,7 +48,7 @@
                         <tr>
                             <td><?php echo !empty($v->id) ? $v->id : ''; ?></td>
                             <td><?php echo !empty($v->goods_name) ? $v->goods_name : ''; ?></td>
-                            <td><?php echo !empty($v->type) && !empty($type) ? $type[$v->type] : '其他'; ?></td>
+                            <td><?php echo (!empty($v->type) && !empty($type) && !empty($type[$v->type])) ? $type[$v->type] : '其他'; ?></td>
                             <td><?php echo !empty($v->price) ? $v->price : ''; ?></td>
                             <td><?php echo !empty($v->update_time) ? $v->update_time : ''; ?></td>
                             <td><a class="btn btn-xs btn-primary"

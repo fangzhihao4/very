@@ -31,4 +31,12 @@ class CommonService extends Service
         }
         clearstatcache();
     }
+
+    public function uploadStatus(){
+        return $status = [
+            1 => "店铺已上传",
+            2 => "ERP已回传",
+            3 => "店铺已下栽"
+        ];
+    }
 }

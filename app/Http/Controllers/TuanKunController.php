@@ -28,13 +28,18 @@ class TuanKunController extends Controller
 
     public function indexAction()
     {
+        $statusList = $this->commonService->uploadStatus();
         $list = $this->getListPage(["user_no" => $this->user_no], [["id", "desc"]]);
-        return view('tuanKun/index', ["list" => $list]);
+        return view('tuanKun/index', ["list" => $list, "status" => $statusList]);
     }
 
     public function getListPage(array $where = [], array $order = [])
     {
         parse_str($_SERVER['QUERY_STRING'], $query);
+        $pagesize = 10;
+        if (!empty($query["pagesize"]) && in_array((int)$query["pagesize"],[10,20,50])){
+            $pagesize = $query["pagesize"];
+        }
         unset($query['page']);
         $params_uri = $query ? '?' . http_build_query($query) : '';
         $path = parse_url($_SERVER['REQUEST_URI']);
@@ -46,7 +51,7 @@ class TuanKunController extends Controller
                 $res->orderBy($v[0], $v[1]);
             }
         }
-        $res = $res->paginate(10)->withPath($path["path"] . $params_uri);
+        $res = $res->paginate($pagesize)->withPath($path["path"] . $params_uri);
         return $res;
     }
 
@@ -85,7 +90,11 @@ class TuanKunController extends Controller
         ];
         try{
             $id = $this->commonModel->addRowReturnId("order_upload", $data_upload);
-            $this->readExcel($tmp_url, $file_suffix, $this->user_no, $id);
+            $res = $this->readExcel($tmp_url, $file_suffix, $this->user_no, $id);
+            if (!empty($res)){
+                $this->commonModel->delList("order_upload",["id" => $id]);
+                return response()->jsonFormat($res["code"], $res["message"]);
+            }
         }catch (\Exception $exception){
             $error = [
                 "name" => "上传锟仔妈妈团长店铺excel错误",
@@ -95,6 +104,7 @@ class TuanKunController extends Controller
             ];
             $this->commonModel->addRow("error_log",$error);
             $this->commonService->delDirAndFile($tmp_url,true);
+            $this->commonModel->delList("order_upload",["id" => $id]);
             return response()->jsonFormat(10003, "上传excel或解析excel异常，请确定excel后重试");
         }
         $this->commonService->delDirAndFile($tmp_url,true);
@@ -118,12 +128,12 @@ class TuanKunController extends Controller
         $highestColumnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn); // e.g. 5
         $lines = $highestRow - 2;
         if ($lines <= 0) {
-            exit('Excel表格中没有数据');
+            return ["code" => 10001, "message"=>"Excel表格中没有数据"];
         }
 
         $lines = $highestRow - 2;
         if ($lines <= 0) {
-            exit('Excel表格中没有数据');
+            return ["code" => 10001, "message"=>"Excel表格中没有数据"];
         }
 
         $campaignsBannerInfo = OrderFiledNameModel::query()
@@ -176,6 +186,9 @@ class TuanKunController extends Controller
                 $value = $worksheet->getCellByColumnAndRow($key_i, $row)->getValue(); //姓名
 
                 if ('商品编码' == $value_name){
+                    if (empty($price_list[$value])){
+                        return ["code" => 10001, "message"=>"商品管理无此商品，请确认后重新上传,商品编码 " . $value];
+                    }
                     $goods_price = !empty($price_list[$value]) ? $price_list[$value]["price"] : 0;
                 }
                 if ('数量' == $value_name){
@@ -228,6 +241,19 @@ class TuanKunController extends Controller
             ->where('id', $id)
             ->limit(1)
             ->first();
+        if (empty($upload_info)){
+            return response()->jsonFormat(1001, '错误的下载信息');
+        }
+        if ($upload_info["status"] == 2){
+            $params_upload = [
+                "status" => 3,
+                "update_time" => date('Y-m-d H:i:s')
+            ];
+            OrderUploadModel::query()
+                ->where("id", $upload_info["id"])
+                ->update($params_upload);
+        }
+
         $name = $upload_info["name"];
         $spreadsheet = new Spreadsheet();
         $worksheet = $spreadsheet->getActiveSheet();
