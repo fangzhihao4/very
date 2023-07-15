@@ -22,11 +22,11 @@ class BeforeMiddle
         if( request()->path() == "login/buttonLogin" ){
             return $next($request);
         }
-//        if( session("user_info") ) {
-//            return $next($request);
-//        }else{
-//            return response()->redirectTo('login/login');
-//        }
+        if( session("user_info") ) {
+            return $next($request);
+        }else{
+            return response()->redirectTo('login/login');
+        }
         return $next($request);
 //        return response()->redirectTo('common/index');
     }
