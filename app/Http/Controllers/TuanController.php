@@ -248,9 +248,9 @@ class TuanController extends Controller
         if (empty($upload_info)){
             return response()->jsonFormat(1001, '错误的下载信息');
         }
-        if ($upload_info["status"] == 2){
+        if ($upload_info["status"] == 3){
             $params_upload = [
-                "status" => 3,
+                "status" => 4,
                 "update_time" => date('Y-m-d H:i:s')
             ];
             OrderUploadModel::query()

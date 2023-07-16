@@ -249,7 +249,7 @@ class HeadController extends Controller
                 ->toArray();
             if (!empty($upload_ids)) {
                 $params_upload = [
-                    "status" => 2,
+                    "status" => 3,
                     "update_time" => date('Y-m-d H:i:s')
                 ];
                 OrderUploadModel::query()
@@ -315,12 +315,16 @@ class HeadController extends Controller
 //        $store_list = $this->storeList();
         $len = count($all_info);
         $j = 0;
+
+        $upload_ids = [];
         for ($i = 0; $i < $len; $i++) {
             $j = $i + 2; //从表格第2行开始
             $row_excel = 2;
             $data_arr = (array)$all_info[$i];
-//            $name_store = "牛奶分销";
-            $name_store = $data_arr["store_name"];
+            array_push($upload_ids,$data_arr["upload_id"]);
+
+            $name_store = "牛奶分销";
+//            $name_store = $data_arr["store_name"];
             $worksheet->setCellValueByColumnAndRow(1, $j, $name_store);
             foreach ($table_filed_arr as $key_filed => $value_filed) {
                 $filed_name = $value_filed["table_field_name"];
@@ -330,10 +334,23 @@ class HeadController extends Controller
                 if ($filed_name == "original_order_number") {
                     $value_value = !empty($data_arr[$filed_name]) ? "LP" . $data_arr[$filed_name] : "";
                 }
+                if($filed_name == "distributor"){
+                    $value_value = $data_arr["store_name"];
+                }
                 $worksheet->setCellValueByColumnAndRow($row_excel, $j, $value_value);
                 $row_excel++;
             }
         }
+
+            if (!empty($upload_ids)) {
+                $params_upload = [
+                    "status" => 2,
+                    "update_time" => date('Y-m-d H:i:s')
+                ];
+                OrderUploadModel::query()
+                    ->whereIn("id", $upload_ids)
+                    ->update($params_upload);
+            }
 
         $styleArrayBody = [
             'borders' => [
