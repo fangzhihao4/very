@@ -33,6 +33,19 @@ class HeadController extends Controller
         return view('head/index', ["list" => $list, "store" => $storeInfo, "status" => $statusList]);
     }
 
+    public function delUploadAction(){
+        $id = (int)request()->input('id', '');
+        if(!empty($id)){
+            $this->commonModel->delList("order_upload",['id' => $id]);
+            $this->commonModel->delList("order_list",['upload_id' => $id]);
+            $this->commonModel->delList("order_hang",['upload_id' => $id]);
+            $this->commonModel->delList("order_tuan",['upload_id' => $id]);
+            $this->commonModel->delList("order_wei",['upload_id' => $id]);
+            $this->commonModel->delList("order_wei_info",['upload_id' => $id]);
+        }
+        return response()->jsonFormat(200, '删除成功');
+    }
+
     public function getListPage(array $where = [], array $order = [])
     {
         parse_str($_SERVER['QUERY_STRING'], $query);
@@ -227,6 +240,9 @@ class HeadController extends Controller
             $logic_name_value = $result[$i][$logic_name_i]; //物流公司
             $logic_number_value = $result[$i][$logic_number_i]; //物流单号
             $order_value = $result[$i][$order_number_i]; //原始单号
+            if(empty($order_value)){
+                continue;
+            }
 
             $order_head = substr($order_value, 0, 2);
             if ($order_head == "LP") {

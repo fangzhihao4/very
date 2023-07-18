@@ -130,4 +130,53 @@
         });
     }
 
+
+    function delUpload(obj){
+        var msg = "是否确认删除这次上传的商品数据?";
+        layer.confirm(msg,{
+            title:'提示',
+            btn:['确定','取消'],
+        },function(){
+            var url = '/head/delUpload';
+            var id =$(obj).data('id');
+            var data = {
+                'id':id,
+            };
+            sendAjax(url,data);
+        });
+    }
+
+    function sendAjax(url,data){
+        var load = layer.load(1, {
+            shade: [0.5,'#fff'] //0.1透明度的白色背景
+        });
+        $.ajax({
+            url:url,
+            method:'post',
+            dataType:'json',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data:data,
+            success:function(res){
+                layer.close(load);
+                if(res.retcode!=200){
+                    layer.alert(res.msg, {title:'提示',icon: 5});
+                    return false;
+                }else{
+                    layer.alert(res.msg, {
+                        title: '提交成功',
+                        icon: 1
+                    }, function(){
+                        layer.msg('加载中', {
+                            icon: 16,
+                            shade: [0.5,'#000000']
+                        });
+                        window.location.href = '/hang/index';
+                    });
+                }
+            }
+        });
+    }
+
 </script>

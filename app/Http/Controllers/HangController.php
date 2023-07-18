@@ -150,10 +150,16 @@ class HangController extends Controller
         $price_list = array_column($goods_list, NULL, 'goods_sku');
         $data_list = array_column($campaignsBannerInfo, NULL, 'excel_field_name');
         $name_arr = [];
+
+        $order_field_name_id = 1;
+
         for ($i = 1; $i <= $highestColumnIndex; $i++) {
             $name = $worksheet->getCellByColumnAndRow($i, 1)->getValue();
             if (!empty($name) && !empty($data_list[$name])) {
                 $name_arr[$i] = $name;
+                if ($data_list[$name]["table_field_name"] == "original_order_number"){
+                    $order_field_name_id = $i;
+                }
             }
         }
         $common_data_arr = [];
@@ -174,6 +180,12 @@ class HangController extends Controller
             $goods_total_price = 0;
             $goods_price = 0;
             $goods_num = 0;
+
+            $value = $worksheet->getCellByColumnAndRow($order_field_name_id, $row)->getValue(); //订单号没有不算行
+            if (empty($value)){
+                continue;
+            }
+
             foreach ($name_arr as $key_i => $value_name) {
                 $table_name_data = $data_list[$value_name];
                 if (!$table_name_data) {
