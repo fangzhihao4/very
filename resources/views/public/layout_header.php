@@ -59,13 +59,13 @@
                             <?php if (!empty($user_info) && ($user_info["type"] == 1)): ?>
                             <li><a href="/user/index"><i class="fa fa-users"></i> 用户管理 </a></li>
                             <?php endif;?>
-                            <li><a href="/goods/index"><i class="fa fa-pinterest"></i> 商品Legends </a></li>
+                            <li><a href="/goods/index"><i class="fa fa-pinterest"></i> 商品信息 </a></li>
                             <li><a href="/head/index"><i class="fa fa-desktop"></i> ERP </a></li>
                             <li><a href="/hang/index"><i class="fa fa-leaf"></i> 小红帽 </a></li>
                             <li><a href="/wei/index"><i class="fa fa-fire"></i> 微店 </a></li>
-                            <li><a href="/tuan/index"><i class="fa fa-eye"></i> 胖奶油团长 </a></li>
-                            <li><a href="/tuanKun/index"><i class="fa fa-random"></i> 锟仔妈妈团长 </a></li>
-                            <li><a href="/tuanMao/index"><i class="fa fa-comment"></i> 猫家严选 </a></li>
+                            <li><a href="/tuan/index"><i class="fa fa-eye"></i> 团长 </a></li>
+<!--                            <li><a href="/tuanKun/index"><i class="fa fa-random"></i> 锟仔妈妈团长 </a></li>-->
+<!--                            <li><a href="/tuanMao/index"><i class="fa fa-comment"></i> 猫家严选 </a></li>-->
                         </ul>
                     </div>
                 </div>

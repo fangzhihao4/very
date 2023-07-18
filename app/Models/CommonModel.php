@@ -83,6 +83,12 @@ class CommonModel extends Model
         return $res;
     }
 
+    public function updateRowWhere($table, $where, $params){
+        $params['update_time'] = date('Y-m-d H:i:s');
+        $res = DB::table($table)->where($where)->update($params);
+        return $res;
+    }
+
     public function delList($table, $where){
         $res = DB::table($table)->where($where)->delete();
         return $res;
