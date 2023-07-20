@@ -33,15 +33,16 @@ class HeadController extends Controller
         return view('head/index', ["list" => $list, "store" => $storeInfo, "status" => $statusList]);
     }
 
-    public function delUploadAction(){
+    public function delUploadAction()
+    {
         $id = (int)request()->input('id', '');
-        if(!empty($id)){
-            $this->commonModel->delList("order_upload",['id' => $id]);
-            $this->commonModel->delList("order_list",['upload_id' => $id]);
-            $this->commonModel->delList("order_hang",['upload_id' => $id]);
-            $this->commonModel->delList("order_tuan",['upload_id' => $id]);
-            $this->commonModel->delList("order_wei",['upload_id' => $id]);
-            $this->commonModel->delList("order_wei_info",['upload_id' => $id]);
+        if (!empty($id)) {
+            $this->commonModel->delList("order_upload", ['id' => $id]);
+            $this->commonModel->delList("order_list", ['upload_id' => $id]);
+            $this->commonModel->delList("order_hang", ['upload_id' => $id]);
+            $this->commonModel->delList("order_tuan", ['upload_id' => $id]);
+            $this->commonModel->delList("order_wei", ['upload_id' => $id]);
+            $this->commonModel->delList("order_wei_info", ['upload_id' => $id]);
         }
         return response()->jsonFormat(200, '删除成功');
     }
@@ -99,15 +100,15 @@ class HeadController extends Controller
         try {
 //            $this->readExcel($tmp_url, $file_suffix);
             $this->readCsv($tmp_url);
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             $error = [
                 "name" => "上传ERP店铺excel错误",
-                "message" => substr($exception,0, 2000),
+                "message" => substr($exception, 0, 2000),
                 "create_time" => date('Y-m-d H:i:s'),
                 "update_time" => date('Y-m-d H:i:s')
             ];
-            $this->commonModel->addRow("error_log",$error);
-            $this->commonService->delDirAndFile($tmp_url,true);
+            $this->commonModel->addRow("error_log", $error);
+            $this->commonService->delDirAndFile($tmp_url, true);
             return response()->jsonFormat(10003, "上传excel或解析excel异常，请确定excel后重试");
         }
 
@@ -166,6 +167,7 @@ class HeadController extends Controller
                 $order_number_i = $i;
             }
         }
+        $all_info = [];
         for ($row = 2; $row <= $highestRow; ++$row) {
             $logic_name_value = $worksheet->getCellByColumnAndRow($logic_name_i, $row)->getValue(); //物流公司
             $logic_number_value = $worksheet->getCellByColumnAndRow($logic_number_i, $row)->getValue(); //物流单号
@@ -175,12 +177,27 @@ class HeadController extends Controller
             if ($order_head == "LP") {
                 $order_value = substr($order_value, 2, strlen($order_value));
             }
-
-            if (!empty($order_value)) {
-                $this->updateOrder($order_value, $logic_name_value, $logic_number_value);
+            if (empty($all_info[$order_value])) {
+                $all_info[$order_value] = [
+                    "logic_name" => $logic_name_value,
+                    "logic_number" => $logic_number_value
+                ];
+            } else {
+                $all_info[$order_value]["logic_name"] = $all_info[$order_value]["logic_name"] . ";" . $logic_number_value;
+                $all_info[$order_value]["logic_number"] = $all_info[$order_value]["logic_number"] . ";" . $logic_number_value;
             }
-            array_push($goods_list,$order_value);
+//            if (!empty($order_value)) {
+//                $this->updateOrder($order_value, $logic_name_value, $logic_number_value);
+//            }
+            array_push($goods_list, $order_value);
         }
+
+        if (!empty($all_info)){
+            foreach ($all_info as $k_all => $v_all){
+                $this->updateOrder($k_all, $v_all["logic_name"], $v_all["logic_number"]);
+            }
+        }
+
 
         if (!empty($goods_list)) {
             $upload_ids = OrderListModel::query()
@@ -235,12 +252,12 @@ class HeadController extends Controller
         }
 
         $goods_list = [];
-
+        $all_info = [];
         for ($i = 1; $i < $len_result; $i++) { //循环获取各字段值
             $logic_name_value = $result[$i][$logic_name_i]; //物流公司
             $logic_number_value = $result[$i][$logic_number_i]; //物流单号
             $order_value = $result[$i][$order_number_i]; //原始单号
-            if(empty($order_value)){
+            if (empty($order_value)) {
                 continue;
             }
 
@@ -249,11 +266,27 @@ class HeadController extends Controller
                 $order_value = substr($order_value, 2, strlen($order_value));
             }
 
-            if (!empty($order_value)) {
-                $this->updateOrder($order_value, $logic_name_value, $logic_number_value);
+            if (empty($all_info[$order_value])) {
+                $all_info[$order_value] = [
+                    "logic_name" => $logic_name_value,
+                    "logic_number" => $logic_number_value
+                ];
+            } else {
+                $all_info[$order_value]["logic_name"] = $all_info[$order_value]["logic_name"] . ";" . $logic_name_value;
+                $all_info[$order_value]["logic_number"] = $all_info[$order_value]["logic_number"] . ";" . $logic_number_value;
             }
+
+//            if (!empty($order_value)) {
+//                $this->updateOrder($order_value, $logic_name_value, $logic_number_value);
+//            }
             array_push($goods_list, $order_value);
 
+        }
+
+        if (!empty($all_info)){
+            foreach ($all_info as $k_all => $v_all){
+                $this->updateOrder($k_all, (string)$v_all["logic_name"], (string)$v_all["logic_number"]);
+            }
         }
 
         if (!empty($goods_list)) {
@@ -337,7 +370,7 @@ class HeadController extends Controller
             $j = $i + 2; //从表格第2行开始
             $row_excel = 2;
             $data_arr = (array)$all_info[$i];
-            array_push($upload_ids,$data_arr["upload_id"]);
+            array_push($upload_ids, $data_arr["upload_id"]);
 
             $name_store = "牛奶分销";
 //            $name_store = $data_arr["store_name"];
@@ -350,7 +383,7 @@ class HeadController extends Controller
                 if ($filed_name == "original_order_number") {
                     $value_value = !empty($data_arr[$filed_name]) ? "LP" . $data_arr[$filed_name] : "";
                 }
-                if($filed_name == "distributor"){
+                if ($filed_name == "distributor") {
                     $value_value = $data_arr["store_name"];
                 }
                 $worksheet->setCellValueByColumnAndRow($row_excel, $j, $value_value);
@@ -358,15 +391,15 @@ class HeadController extends Controller
             }
         }
 
-            if (!empty($upload_ids)) {
-                $params_upload = [
-                    "status" => 2,
-                    "update_time" => date('Y-m-d H:i:s')
-                ];
-                OrderUploadModel::query()
-                    ->whereIn("id", $upload_ids)
-                    ->update($params_upload);
-            }
+        if (!empty($upload_ids)) {
+            $params_upload = [
+                "status" => 2,
+                "update_time" => date('Y-m-d H:i:s')
+            ];
+            OrderUploadModel::query()
+                ->whereIn("id", $upload_ids)
+                ->update($params_upload);
+        }
 
         $styleArrayBody = [
             'borders' => [
@@ -408,11 +441,11 @@ class HeadController extends Controller
 
         $sql = 'update order_list set logistics_company = :logistics_company, logistics_number = :logistics_number, update_time = :update_time, status = :status where original_order_number = :original_order_number';
         $params = [
-            'logistics_company' => $logic_name,
-            'logistics_number' => $logic_number,
+            'logistics_company' => (string)$logic_name,
+            'logistics_number' => (string)$logic_number,
             'update_time' => date('Y-m-d H:i:s'),
             'status' => 2,
-            'original_order_number' => $order_number,
+            'original_order_number' => (string)$order_number,
         ];
         return DB::update($sql, $params);
     }
