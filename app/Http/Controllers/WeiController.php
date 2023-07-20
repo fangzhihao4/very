@@ -223,13 +223,17 @@ class WeiController extends Controller
 
                 if ('型号编码' == $value_name){
                     if (strrpos($value,";") && !empty($goods_sku_num_value)){
-                        $value = $value. ';-'.$goods_sku_num_value;
+                        $price_sku = $value. '&'.$goods_sku_num_value;
                         $is_all_price = 1;
-                        if (empty($price_list[$value])){
+                        if (empty($price_list[$price_sku])){
                             $is_add_price = 1;
-                            $add_price_goods_sku = $value;
+                            $add_price_goods_sku = $price_sku;
                         }
                     }else{
+//                        if (empty($price_list[$value])){
+//                            $is_add_price = 1;
+//                            $add_price_goods_sku = $value;
+//                        }
                         if (empty($price_list[$value])){
                             return ["code" => 10001, "message"=>"商品管理无此商品，请确认后重新上传,商品编码 " . $value];
                         }

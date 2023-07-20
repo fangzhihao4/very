@@ -363,32 +363,57 @@ class HeadController extends Controller
 
 //        $store_list = $this->storeList();
         $len = count($all_info);
-        $j = 0;
+        $j = 2;//从表格第2行开始
 
         $upload_ids = [];
         for ($i = 0; $i < $len; $i++) {
-            $j = $i + 2; //从表格第2行开始
-            $row_excel = 2;
+
             $data_arr = (array)$all_info[$i];
             array_push($upload_ids, $data_arr["upload_id"]);
 
-            $name_store = "牛奶分销";
-//            $name_store = $data_arr["store_name"];
-            $worksheet->setCellValueByColumnAndRow(1, $j, $name_store);
-            foreach ($table_filed_arr as $key_filed => $value_filed) {
-                $filed_name = $value_filed["table_field_name"];
-
-                $value_value = !empty($data_arr[$filed_name]) ? $data_arr[$filed_name] : "";
-
-                if ($filed_name == "original_order_number") {
-                    $value_value = !empty($data_arr[$filed_name]) ? "LP" . $data_arr[$filed_name] : "";
+            $goods_sku = $data_arr["merchant_code"];
+            $goods_all_price = $data_arr["total_product_price"];
+//            $goods_nums = $data_arr["number_of_product_pieces"];
+            if (strrpos($goods_sku,";") && ($data_arr["user_no"] == "10002")){
+                $wei_info = $this->commonModel->getRow("order_wei",["upload_id" => $data_arr["upload_id"], "original_order_number" => $data_arr["original_order_number"]]);
+                $goods_num_arr =[];
+                if (!empty($wei_info) && !empty($wei_info[0])){
+                    $goods_num_arr = explode(";", $wei_info[0]->number_of_product_pieces);
                 }
-                if ($filed_name == "distributor") {
-                    $value_value = $data_arr["store_name"];
+                $goods_sku_arr = explode(";", $goods_sku);
+                foreach ($goods_sku_arr as $k_g =>  $goods_value){
+                    $goods_info = $this->commonModel->getRow("goods_info", ["goods_sku" => $goods_value]);
+                    $goods_price = 0;
+                    if (!empty($goods_info) && !empty($goods_info[0])){
+                        $goods_price = (float)$goods_info[0]->price;
+                    }
+                    $goods_num = !empty($goods_num_arr[$k_g]) ? $goods_num_arr[$k_g] : 0;
+                    $goods_all_price = (float)$goods_price * (float)$goods_num;
+                    $worksheet = $this->excelInfo($worksheet, $j, $table_filed_arr, $data_arr, $goods_value, $goods_all_price);
+                    $j++; //从表格第2行开始
                 }
-                $worksheet->setCellValueByColumnAndRow($row_excel, $j, $value_value);
-                $row_excel++;
+            }else{
+                $worksheet = $this->excelInfo($worksheet, $j, $table_filed_arr, $data_arr, $goods_sku, $goods_all_price);
+                $j++; //从表格第2行开始
             }
+
+//            $name_store = "牛奶分销";
+////            $name_store = $data_arr["store_name"];
+//            $worksheet->setCellValueByColumnAndRow(1, $j, $name_store);
+//            foreach ($table_filed_arr as $key_filed => $value_filed) {
+//                $filed_name = $value_filed["table_field_name"];
+//
+//                $value_value = !empty($data_arr[$filed_name]) ? $data_arr[$filed_name] : "";
+//
+//                if ($filed_name == "original_order_number") {
+//                    $value_value = !empty($data_arr[$filed_name]) ? "LP" . $data_arr[$filed_name] : "";
+//                }
+//                if ($filed_name == "distributor") {
+//                    $value_value = $data_arr["store_name"];
+//                }
+//                $worksheet->setCellValueByColumnAndRow($row_excel, $j, $value_value);
+//                $row_excel++;
+//            }
         }
 
         if (!empty($upload_ids)) {
@@ -423,6 +448,35 @@ class HeadController extends Controller
 
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
         $writer->save('php://output');
+    }
+
+
+    public function excelInfo($worksheet, $j, $table_filed_arr, $data_arr, $goods_sku, $goods_all_price){
+        $name_store = "牛奶分销";
+//            $name_store = $data_arr["store_name"];
+        $worksheet->setCellValueByColumnAndRow(1, $j, $name_store);
+        $row_excel = 2;
+        foreach ($table_filed_arr as $key_filed => $value_filed) {
+            $filed_name = $value_filed["table_field_name"];
+
+            $value_value = !empty($data_arr[$filed_name]) ? $data_arr[$filed_name] : "";
+
+            if ($filed_name == "original_order_number") {
+                $value_value = !empty($data_arr[$filed_name]) ? "LP" . $data_arr[$filed_name] : "";
+            }
+            if ($filed_name == "distributor") {
+                $value_value = $data_arr["store_name"];
+            }
+            if($filed_name == "merchant_code"){
+                $value_value = $goods_sku;
+            }
+            if ($filed_name == "total_product_price"){
+                $value_value = $goods_all_price;
+            }
+            $worksheet->setCellValueByColumnAndRow($row_excel, $j, $value_value);
+            $row_excel++;
+        }
+        return $worksheet;
     }
 
 
