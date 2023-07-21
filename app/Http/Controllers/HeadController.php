@@ -183,7 +183,7 @@ class HeadController extends Controller
                     "logic_number" => $logic_number_value
                 ];
             } else {
-                $all_info[$order_value]["logic_name"] = $all_info[$order_value]["logic_name"] . ";" . $logic_number_value;
+                $all_info[$order_value]["logic_name"] = $all_info[$order_value]["logic_name"] . ";" . $logic_name_value;
                 $all_info[$order_value]["logic_number"] = $all_info[$order_value]["logic_number"] . ";" . $logic_number_value;
             }
 //            if (!empty($order_value)) {
@@ -234,8 +234,8 @@ class HeadController extends Controller
         $title_count = count($result[0]);
         $data_values = "";
         $logic_name_i = 0;
-        $logic_number_i = 0;
-        $order_number_i = 0;
+        $logic_number_i = 1;
+        $order_number_i = 2;
         $logic_name = "物流公司";
         $logic_number = "物流单号";
         $order_number = "原始单号";
@@ -322,7 +322,7 @@ class HeadController extends Controller
             }
             $n++;
         }
-        return $out;
+        return eval('return '.iconv('gbk','utf-8',var_export($out,true)).';');
     }
 
     public function downloadAction()
@@ -389,11 +389,11 @@ class HeadController extends Controller
                     }
                     $goods_num = !empty($goods_num_arr[$k_g]) ? $goods_num_arr[$k_g] : 0;
                     $goods_all_price = (float)$goods_price * (float)$goods_num;
-                    $worksheet = $this->excelInfo($worksheet, $j, $table_filed_arr, $data_arr, $goods_value, $goods_all_price);
+                    $worksheet = $this->excelInfo($worksheet, $j, $table_filed_arr, $data_arr, $goods_value, $goods_all_price, (float)$goods_price, $goods_num);
                     $j++; //从表格第2行开始
                 }
             }else{
-                $worksheet = $this->excelInfo($worksheet, $j, $table_filed_arr, $data_arr, $goods_sku, $goods_all_price);
+                $worksheet = $this->excelInfo($worksheet, $j, $table_filed_arr, $data_arr, $goods_sku, $goods_all_price,(float)$data_arr["product_price"], $data_arr["product_quantity"]);
                 $j++; //从表格第2行开始
             }
 
@@ -451,7 +451,7 @@ class HeadController extends Controller
     }
 
 
-    public function excelInfo($worksheet, $j, $table_filed_arr, $data_arr, $goods_sku, $goods_all_price){
+    public function excelInfo($worksheet, $j, $table_filed_arr, $data_arr, $goods_sku, $goods_all_price, $goods_price, $goods_num){
         $name_store = "牛奶分销";
 //            $name_store = $data_arr["store_name"];
         $worksheet->setCellValueByColumnAndRow(1, $j, $name_store);
@@ -472,6 +472,12 @@ class HeadController extends Controller
             }
             if ($filed_name == "total_product_price"){
                 $value_value = $goods_all_price;
+            }
+            if($filed_name == "product_price"){
+                $value_value = $goods_price;
+            }
+            if ($filed_name == "product_quantity"){
+                $value_value = $goods_num;
             }
             $worksheet->setCellValueByColumnAndRow($row_excel, $j, $value_value);
             $row_excel++;
