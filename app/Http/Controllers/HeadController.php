@@ -11,6 +11,7 @@ use App\Models\OrderListModel;
 use App\Models\OrderUploadModel;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use Symfony\Component\Console\Input\Input;
 
 class HeadController extends Controller
 {
@@ -322,7 +323,12 @@ class HeadController extends Controller
             }
             $n++;
         }
-        return eval('return '.iconv('gbk','utf-8',var_export($out,true)).';');
+        $res = eval('return '.iconv('gbk','utf-8',var_export($out,true)).';');
+        if (empty($res)){
+            return $out;
+        }else{
+            return $res;
+        }
     }
 
     public function downloadAction()
