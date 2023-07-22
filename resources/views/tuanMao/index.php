@@ -41,7 +41,7 @@
                             <td><?php echo !empty($v->create_time) ? $v->create_time : ''; ?></td>
                             <td><?php echo !empty($v->update_time) ? $v->update_time : ''; ?></td>
                             <td>
-                                <button type="button" onclick="javascript:location.href='/tuanKun/download?upload_id=' + <?php echo !empty($v->id) ? $v->id : ''; ?>"
+                                <button type="button" onclick="javascript:location.href='/tuanMao/download?upload_id=' + <?php echo !empty($v->id) ? $v->id : ''; ?>"
                                         class="btn btn-info"><i class="fa fa-file-excel-o"></i> 导出excel
                                 </button>
                                 <a onclick="delUpload(this);" href="javascript:;" data-id="<?php echo $v->id;?>" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i>删除</a>

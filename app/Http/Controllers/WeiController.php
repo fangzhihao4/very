@@ -282,6 +282,7 @@ class WeiController extends Controller
                 $common_data["total_product_price"] = $goods_total_price;
             }
 
+            $common_data["distributor"] = "微店";
             $common_data["total_receivable"] = $common_data["total_product_price"];
             $common_data["product_price"] = $common_data["total_product_price"];
             $common_data["warehouse_name"] = "无锡电商牛奶仓";

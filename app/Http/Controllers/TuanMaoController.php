@@ -224,6 +224,9 @@ class TuanMaoController extends Controller
             if (!empty($goods_total_price) && ($goods_total_price != 0) ){
                 $common_data["total_product_price"] = $goods_total_price;
             }
+            if (empty($common_data["payment_time"])){
+                $common_data["payment_time"] = $common_data["order_time"];
+            }
 
             $common_data["total_receivable"] = $common_data["total_product_price"];
             $common_data["product_price"] = $goods_price;

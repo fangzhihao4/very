@@ -224,9 +224,11 @@ class TuanController extends Controller
                 $common_data["total_product_price"] = $goods_total_price;
             }
 
+            $common_data["payment_time"] = $common_data["order_time"];
             $common_data["total_receivable"] = $common_data["total_product_price"];
             $common_data["product_price"] = $goods_price;
             $common_data["warehouse_name"] = "无锡电商牛奶仓";
+            $common_data["distributor"] = "胖奶油";
 
             $store_data["original_order_number"] = $common_data["original_order_number"];
             $store_info["original_order_number"] = $common_data["original_order_number"];
