@@ -10,6 +10,7 @@ use App\Models\OrderFiledNameModel;
 use App\Models\OrderListModel;
 use App\Models\OrderUploadModel;
 use Illuminate\Support\Facades\DB;
+use PHPExcel_Cell_DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Symfony\Component\Console\Input\Input;
 
@@ -470,9 +471,9 @@ class HeadController extends Controller
             if ($filed_name == "original_order_number") {
                 $value_value = !empty($data_arr[$filed_name]) ? "LP" . $data_arr[$filed_name] : "";
             }
-            if ($filed_name == "distributor") {
-                $value_value = $data_arr["store_name"];
-            }
+//            if ($filed_name == "distributor") {
+//                $value_value = $data_arr["store_name"];
+//            }
             if($filed_name == "merchant_code"){
                 $value_value = $goods_sku;
             }
@@ -485,7 +486,7 @@ class HeadController extends Controller
             if ($filed_name == "product_quantity"){
                 $value_value = $goods_num;
             }
-            $worksheet->setCellValueByColumnAndRow($row_excel, $j, $value_value);
+            $worksheet->setCellValueExplicit([$row_excel , $j], (string)$value_value,PHPExcel_Cell_DataType::TYPE_STRING);
             $row_excel++;
         }
         return $worksheet;

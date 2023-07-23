@@ -10,6 +10,7 @@ use App\Models\GoodsInfoModel;
 use App\Models\OrderFiledNameModel;
 use App\Models\OrderUploadModel;
 use Illuminate\Support\Facades\DB;
+use PHPExcel_Cell_DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class TuanMaoController extends Controller
@@ -309,7 +310,7 @@ class TuanMaoController extends Controller
             foreach ($table_filed_arr as $key_filed => $value_filed) {
                 $filed_name = $value_filed["table_field_name"];
                 $data_arr = (array)$all_info[$i];
-                $worksheet->setCellValueByColumnAndRow($row_excel, $j, (String)$data_arr[$filed_name]);
+                $worksheet->setCellValueExplicit([$row_excel , $j], (string)$data_arr[$filed_name],PHPExcel_Cell_DataType::TYPE_STRING);
                 $row_excel++;
             }
         }
