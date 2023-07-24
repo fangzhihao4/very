@@ -285,7 +285,7 @@ class WeiController extends Controller
 
             $common_data["distributor"] = "微店";
             $common_data["total_receivable"] = $common_data["total_product_price"];
-            $common_data["product_price"] = $common_data["total_product_price"];
+            $common_data["product_price"] = ($is_add_price == 1) ? $common_data["total_product_price"] : $goods_price;
             $common_data["warehouse_name"] = "无锡电商牛奶仓";
 
             $store_data["original_order_number"] = $common_data["original_order_number"];

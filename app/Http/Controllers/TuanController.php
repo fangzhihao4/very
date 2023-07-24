@@ -196,6 +196,7 @@ class TuanController extends Controller
                 }
                 $value = $worksheet->getCellByColumnAndRow($key_i, $row)->getValue(); //姓名
                 if ('商品编码' == $value_name){
+                    $value = str_replace(array("\r\n", "\r", "\n"), "", $value);
                     if (empty($price_list[$value])){
                         return ["code" => 10001, "message"=>"商品管理无此商品，请确认后重新上传,商品编码 " . $value];
                     }

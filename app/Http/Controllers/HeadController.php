@@ -258,6 +258,7 @@ class HeadController extends Controller
         for ($i = 1; $i < $len_result; $i++) { //循环获取各字段值
             $logic_name_value = $result[$i][$logic_name_i]; //物流公司
             $logic_number_value = $result[$i][$logic_number_i]; //物流单号
+            $logic_number_value = str_replace(array("\r\n", "\r", "\n", "=", "\"", "'"), "", $logic_number_value);
             $order_value = $result[$i][$order_number_i]; //原始单号
             if (empty($order_value)) {
                 continue;
