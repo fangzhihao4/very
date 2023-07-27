@@ -402,8 +402,16 @@ class WeiController extends Controller
     public function getOrderList(array $where)
     {
         return DB::table('order_list as o')
-            ->leftJoin('order_wei as w', 'o.original_order_number', '=', 'w.original_order_number')
-            ->leftJoin('order_wei_info as wi', 'o.original_order_number', '=', 'wi.original_order_number')
+            ->leftJoin("order_wei as w", function($join){
+                $join->on("o.original_order_number", "=", "w.original_order_number");
+                $join->on("o.upload_id", "=", "w.upload_id");
+            })
+            ->leftJoin("order_wei_info as wi", function($join){
+                $join->on("o.original_order_number", "=", "wi.original_order_number");
+                $join->on("o.upload_id", "=", "wi.upload_id");
+            })
+//            ->leftJoin('order_wei as w', 'o.original_order_number', '=', 'w.original_order_number')
+//            ->leftJoin('order_wei_info as wi', 'o.original_order_number', '=', 'wi.original_order_number')
             ->select('o.*', 'w.*','wi.*')
             ->where($where)
             ->orderBy('o.sort', 'asc')

@@ -165,6 +165,8 @@ class TuanController extends Controller
         $common_data_arr = [];
         $store_data_arr = [];
         $store_info_arr = [];
+        $repeat_order_no = [];
+        $all_order_no = [];
         for ($row = 2; $row <= $highestRow; ++$row) {
             $common_data = [];
             $store_data = [];
@@ -234,10 +236,28 @@ class TuanController extends Controller
 
             $store_data["original_order_number"] = $common_data["original_order_number"];
             $store_info["original_order_number"] = $common_data["original_order_number"];
+            $store_info["sort"] = $common_data["sort"];
+
+            //已经有订单对应价格
+            if (isset($all_order_no[$common_data["original_order_number"]])){
+                $first_order_total_price = $all_order_no[$common_data["original_order_number"]]; //第一单价格
+                if (isset($repeat_order_no[$common_data["original_order_number"]])){ //是第三单或者更多订单 价格 = 新单价格 + 历史重复单价格
+                    $repeat_order_no[$common_data["original_order_number"]] = (float)$repeat_order_no[$common_data["original_order_number"]] +  (float)$common_data["total_product_price"];
+                }else{//第二单重复 价格= 第一单价格 + 第二单价格
+                    $repeat_order_no[$common_data["original_order_number"]] =  $common_data["total_product_price"] + $first_order_total_price;
+                }
+            }
+            //订单对应价格
+            $all_order_no[$common_data["original_order_number"]] = $common_data["total_product_price"];
 
             array_push($common_data_arr, $common_data);
             array_push($store_data_arr, $store_data);
             array_push($store_info_arr, $store_info);
+        }
+        foreach ($common_data_arr as $common_key => $common_value){
+            if (isset($repeat_order_no[$common_value["original_order_number"]])){
+                $common_data_arr[$common_key]["total_receivable"] = $repeat_order_no[$common_value["original_order_number"]];
+            }
         }
 //        DB::beginTransaction();
         $this->commonModel->addRow("order_list", $common_data_arr);
@@ -344,8 +364,13 @@ class TuanController extends Controller
     public function getOrderList(array $where)
     {
         return DB::table('order_list as o')
-            ->leftJoin('order_tuan as t', 'o.original_order_number', '=', 't.original_order_number')
-            ->select('o.*', 't.*')
+            ->leftJoin("order_tuan as t", function($join){
+                $join->on("o.original_order_number", "=", "t.original_order_number");
+                $join->on("o.upload_id", "=", "t.upload_id");
+                $join->on("o.sort", "=", "t.sort");
+            })
+//            ->join('order_tuan as t', 'o.original_order_number', '=', 't.original_order_number')
+            ->select('o.*', 't.*', 'o.original_order_number', 'o.sort')
             ->where($where)
             ->orderBy('o.sort', 'asc')
             ->get();
