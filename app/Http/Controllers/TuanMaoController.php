@@ -213,7 +213,7 @@ class TuanMaoController extends Controller
                 } elseif ($table_name_data["type"] == 2) {
                     $store_data[$table_name_data["table_field_name"]] = $value;
                 }else{
-                    $store_info[$table_name_data["table_field_name"]] = $value;
+                    $store_data[$table_name_data["table_field_name"]] = $value;
                 }
 
 
@@ -235,8 +235,7 @@ class TuanMaoController extends Controller
             $common_data["warehouse_name"] = "无锡电商牛奶仓";
 
             $store_data["original_order_number"] = $common_data["original_order_number"];
-            $store_info["original_order_number"] = $common_data["original_order_number"];
-            $store_info["sort"] = $common_data["sort"];
+            $store_data["sort"] = $common_data["sort"];
 
             //已经有订单对应价格
             if (isset($all_order_no[$common_data["original_order_number"]])){
@@ -252,7 +251,7 @@ class TuanMaoController extends Controller
 
             array_push($common_data_arr, $common_data);
             array_push($store_data_arr, $store_data);
-            array_push($store_info_arr, $store_info);
+//            array_push($store_info_arr, $store_info);
         }
 
         foreach ($common_data_arr as $common_key => $common_value){

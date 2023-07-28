@@ -236,7 +236,7 @@ class TuanController extends Controller
 
             $store_data["original_order_number"] = $common_data["original_order_number"];
             $store_info["original_order_number"] = $common_data["original_order_number"];
-            $store_info["sort"] = $common_data["sort"];
+            $store_data["sort"] = $common_data["sort"];
 
             //已经有订单对应价格
             if (isset($all_order_no[$common_data["original_order_number"]])){

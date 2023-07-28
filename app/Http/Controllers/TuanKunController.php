@@ -236,7 +236,7 @@ class TuanKunController extends Controller
 
             $store_data["original_order_number"] = $common_data["original_order_number"];
             $store_info["original_order_number"] = $common_data["original_order_number"];
-            $store_info["sort"] = $common_data["sort"];
+            $store_data["sort"] = $common_data["sort"];
 
             //已经有订单对应价格
             if (isset($all_order_no[$common_data["original_order_number"]])){
@@ -302,6 +302,7 @@ class TuanKunController extends Controller
             ->toArray();
 
         $all_info = $this->getOrderList(["o.upload_id" => $id]);
+        var_export($all_info);exit;
 
         //表头
         $row_excel = 1;
@@ -362,17 +363,20 @@ class TuanKunController extends Controller
 
     public function getOrderList(array $where)
     {
-        return DB::table('order_list as o')
+        DB::enableQueryLog();
+        $data =  DB::table('order_list as o')
             ->leftJoin("order_tuan as t", function($join){
                 $join->on("o.original_order_number", "=", "t.original_order_number");
                 $join->on("o.upload_id", "=", "t.upload_id");
                 $join->on("o.sort", "=", "t.sort");
             })
 //            ->leftJoin('order_tuan as t', 'o.original_order_number', '=', 't.original_order_number')
-            ->select('o.*', 't.*', 'o.original_order_number', 'o.sort')
+            ->select('o.*', 't.*', 'o.original_order_number', 'o.sort','t.product_name')
             ->where($where)
-            ->orderBy('o.sort', 'asc')
-            ->get();
+            ->orderBy('o.sort', 'asc');
+//            ->get();
+        echo $data->toSql();
+        exit;
     }
 
 }
