@@ -369,7 +369,7 @@ class TuanKunController extends Controller
                 $join->on("o.sort", "=", "t.sort");
             })
 //            ->leftJoin('order_tuan as t', 'o.original_order_number', '=', 't.original_order_number')
-            ->select('o.*', 't.*')
+            ->select('o.*', 't.*', 'o.original_order_number', 'o.sort')
             ->where($where)
             ->orderBy('o.sort', 'asc')
             ->get();

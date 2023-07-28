@@ -351,11 +351,11 @@ class HangController extends Controller
     public function getOrderList(array $where)
     {
         return DB::table('order_list as o')
-            ->leftJoin("order_hang as u", function($join){
-                $join->on("o.original_order_number", "=", "u.original_order_number");
-                $join->on("o.upload_id", "=", "u.upload_id");
-            })
-//            ->leftJoin('order_hang as u', 'o.original_order_number', '=', 'u.original_order_number')
+//            ->leftJoin("order_hang as u", function($join){
+//                $join->on("o.original_order_number", "=", "u.original_order_number");
+//                $join->on("o.upload_id", "=", "u.upload_id");
+//            })
+            ->leftJoin('order_hang as u', 'o.original_order_number', '=', 'u.original_order_number')
             ->select('o.*', 'u.*')
             ->where($where)
             ->orderBy('o.sort', 'asc')
