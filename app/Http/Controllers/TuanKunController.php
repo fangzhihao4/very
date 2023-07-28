@@ -363,8 +363,7 @@ class TuanKunController extends Controller
 
     public function getOrderList(array $where)
     {
-        DB::enableQueryLog();
-        $data =  DB::table('order_list as o')
+        return DB::table('order_list as o')
             ->leftJoin("order_tuan as t", function($join){
                 $join->on("o.original_order_number", "=", "t.original_order_number");
                 $join->on("o.upload_id", "=", "t.upload_id");
@@ -373,10 +372,8 @@ class TuanKunController extends Controller
 //            ->leftJoin('order_tuan as t', 'o.original_order_number', '=', 't.original_order_number')
             ->select('o.*', 't.*', 'o.original_order_number', 'o.sort','t.product_name')
             ->where($where)
-            ->orderBy('o.sort', 'asc');
-//            ->get();
-        echo $data->toSql();
-        exit;
+            ->orderBy('o.sort', 'asc')
+            ->get();
     }
 
 }
