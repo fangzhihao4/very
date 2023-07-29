@@ -165,6 +165,9 @@ class HangController extends Controller
         }
         $common_data_arr = [];
         $store_data_arr = [];
+        $repeat_order_no = [];//重复订单号
+        $all_order_no = [];//所有订单号
+
         for ($row = 2; $row <= $highestRow; ++$row) {
             $common_data = [];
             $store_data = [];
@@ -225,9 +228,29 @@ class HangController extends Controller
             $common_data["product_price"] = $goods_price;
 
             $store_data["original_order_number"] = $common_data["original_order_number"];
+            $store_data["sort"] = $common_data["sort"];
+
+            //已经有订单对应价格
+            if (isset($all_order_no[$common_data["original_order_number"]])){
+                $first_order_total_price = $all_order_no[$common_data["original_order_number"]]; //第一单价格
+                if (isset($repeat_order_no[$common_data["original_order_number"]])){ //是第三单或者更多订单 价格 = 新单价格 + 历史重复单价格
+                    $repeat_order_no[$common_data["original_order_number"]] = (float)$repeat_order_no[$common_data["original_order_number"]] +  (float)$common_data["total_product_price"];
+                }else{//第二单重复 价格= 第一单价格 + 第二单价格
+                    $repeat_order_no[$common_data["original_order_number"]] =  $common_data["total_product_price"] + $first_order_total_price;
+                }
+            }
+            //订单对应价格
+            $all_order_no[$common_data["original_order_number"]] = $common_data["total_product_price"];
 
             array_push($common_data_arr, $common_data);
             array_push($store_data_arr, $store_data);
+        }
+
+
+        foreach ($common_data_arr as $common_key => $common_value){
+            if (isset($repeat_order_no[$common_value["original_order_number"]])){
+                $common_data_arr[$common_key]["total_receivable"] = $repeat_order_no[$common_value["original_order_number"]];
+            }
         }
 
         $this->commonModel->addRow("order_list", $common_data_arr);
@@ -351,11 +374,12 @@ class HangController extends Controller
     public function getOrderList(array $where)
     {
         return DB::table('order_list as o')
-//            ->leftJoin("order_hang as u", function($join){
-//                $join->on("o.original_order_number", "=", "u.original_order_number");
-//                $join->on("o.upload_id", "=", "u.upload_id");
-//            })
-            ->leftJoin('order_hang as u', 'o.original_order_number', '=', 'u.original_order_number')
+            ->leftJoin("order_hang as u", function($join){
+                $join->on("o.original_order_number", "=", "u.original_order_number");
+                $join->on("o.upload_id", "=", "u.upload_id");
+                $join->on("o.sort", "=", "u.sort");
+            })
+//            ->leftJoin('order_hang as u', 'o.original_order_number', '=', 'u.original_order_number')
             ->select('o.*', 'u.*')
             ->where($where)
             ->orderBy('o.sort', 'asc')

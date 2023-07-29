@@ -165,8 +165,8 @@ class TuanController extends Controller
         $common_data_arr = [];
         $store_data_arr = [];
         $store_info_arr = [];
-        $repeat_order_no = [];
-        $all_order_no = [];
+        $repeat_order_no = [];//重复订单号
+        $all_order_no = [];//所有订单号
         for ($row = 2; $row <= $highestRow; ++$row) {
             $common_data = [];
             $store_data = [];
