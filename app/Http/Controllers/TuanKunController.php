@@ -19,7 +19,7 @@ class TuanKunController extends Controller
     protected $commonModel;
     protected $commonService;
     public  $user_no = 10004;
-    public $user_name = "锟仔妈妈团长";
+    public $user_name = "团长线下";
 
     public function __construct(CommonModel $commonModel, CommonService  $commonService)
     {
@@ -99,7 +99,7 @@ class TuanKunController extends Controller
             }
         }catch (\Exception $exception){
             $error = [
-                "name" => "上传锟仔妈妈团长店铺excel错误",
+                "name" => "上传团长线下店铺excel错误",
                 "message" => substr($exception,0, 2000),
                 "create_time" => date('Y-m-d H:i:s'),
                 "update_time" => date('Y-m-d H:i:s')
@@ -302,7 +302,6 @@ class TuanKunController extends Controller
             ->toArray();
 
         $all_info = $this->getOrderList(["o.upload_id" => $id]);
-        var_export($all_info);exit;
 
         //表头
         $row_excel = 1;

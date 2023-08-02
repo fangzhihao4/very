@@ -4,7 +4,7 @@
 <div class="right_col" role="main">
     <div class="x_panel">
         <div class="x_title">
-            <h2>猫家严选</h2>
+            <h2>团长快团</h2>
             <div class="clearfix"></div>
         </div>
 

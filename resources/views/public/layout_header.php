@@ -63,9 +63,9 @@
                             <li><a href="/head/index"><i class="fa fa-desktop"></i> ERP </a></li>
                             <li><a href="/hang/index"><i class="fa fa-leaf"></i> 小红帽 </a></li>
                             <li><a href="/wei/index"><i class="fa fa-fire"></i> 微店 </a></li>
-                            <li><a href="/tuan/index"><i class="fa fa-eye"></i> 团长 </a></li>
-                            <li><a href="/tuanKun/index"><i class="fa fa-random"></i> 团长模板一 </a></li>
-                            <li><a href="/tuanMao/index"><i class="fa fa-comment"></i> 团长模板二 </a></li>
+<!--                            <li><a href="/tuan/index"><i class="fa fa-eye"></i> 团长 </a></li>-->
+                            <li><a href="/tuanKun/index"><i class="fa fa-random"></i> 团长线下 </a></li>
+                            <li><a href="/tuanMao/index"><i class="fa fa-comment"></i> 团长快团 </a></li>
                         </ul>
                     </div>
                 </div>

@@ -18,7 +18,7 @@ class TuanMaoController extends Controller
     protected $commonModel;
     protected $commonService;
     private $user_no = 10005;
-    private $user_name = "猫家严选";
+    private $user_name = "团长快团";
 
     public function __construct(CommonModel $commonModel, CommonService  $commonService)
     {
@@ -97,7 +97,7 @@ class TuanMaoController extends Controller
             }
         }catch (\Exception $exception){
             $error = [
-                "name" => "上传猫家严选店铺excel错误",
+                "name" => "上传团长快团店铺excel错误",
                 "message" => substr($exception,0, 2000),
                 "create_time" => date('Y-m-d H:i:s'),
                 "update_time" => date('Y-m-d H:i:s')

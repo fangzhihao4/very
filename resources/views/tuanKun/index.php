@@ -4,7 +4,7 @@
 <div class="right_col" role="main">
     <div class="x_panel">
         <div class="x_title">
-            <h2>锟仔妈妈团长</h2>
+            <h2>团长线下</h2>
             <div class="clearfix"></div>
         </div>
 

@@ -390,7 +390,7 @@ class HeadController extends Controller
                 }
                 $goods_sku_arr = explode(";", $goods_sku);
                 foreach ($goods_sku_arr as $k_g =>  $goods_value){
-                    $goods_info = $this->commonModel->getRow("goods_info", ["goods_sku" => $goods_value]);
+                    $goods_info = $this->commonModel->getRow("goods_info", ["goods_sku" => $goods_value, "type" => 2]);
                     $goods_price = 0;
                     if (!empty($goods_info) && !empty($goods_info[0])){
                         $goods_price = (float)$goods_info[0]->price;
@@ -487,7 +487,11 @@ class HeadController extends Controller
             if ($filed_name == "product_quantity"){
                 $value_value = $goods_num;
             }
-            $worksheet->setCellValueExplicit([$row_excel , $j], (string)$value_value,PHPExcel_Cell_DataType::TYPE_STRING);
+            if (in_array($filed_name,["total_receivable","total_product_price","product_price"])){
+                $worksheet->setCellValueExplicit([$row_excel , $j], (string)$value_value,PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            }else{
+                $worksheet->setCellValueExplicit([$row_excel , $j], (string)$value_value,PHPExcel_Cell_DataType::TYPE_STRING);
+            }
             $row_excel++;
         }
         return $worksheet;
@@ -524,8 +528,8 @@ class HeadController extends Controller
             10001 => "小红帽",
             10002 => "微店",
             10003 => "胖奶油团长",
-            10004 => "锟仔妈妈团长",
-            10005 => "猫家严选"
+            10004 => "团长线下",
+            10005 => "团长快团"
         ];
     }
 }
