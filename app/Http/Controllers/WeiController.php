@@ -216,7 +216,6 @@ class WeiController extends Controller
 
             $is_add_price = 0; //是否新增价格 0不新增  1新增
             $is_all_price = 0; //是否是多商品 0不是多商品 1是多商品
-            $excel_goods_price = 0;
             foreach ($name_arr as $key_i => $value_name) {
                 $table_name_data = $data_list[$value_name];
                 if (!$table_name_data) {
@@ -225,12 +224,12 @@ class WeiController extends Controller
                 $value = $worksheet->getCellByColumnAndRow($key_i, $row)->getValue(); //姓名
 
                 if ('型号编码' == $value_name){
-                    if (strrpos($value,";") && !empty($goods_sku_num_value)){
-                        $price_sku = $value. '&'.$goods_sku_num_value;
-                        $is_all_price = 1;
-                        if (empty($price_list[$price_sku])){
-                            $is_add_price = 1;
-                            $add_price_goods_sku = $price_sku;
+                    if (strrpos($value,";")){
+                        $goods_sku_list = explode(";",$value);
+                        foreach ($goods_sku_list as $g_s_l_k => $g_s_l_v){
+                            if (empty($price_list[$g_s_l_v])){
+                                return ["code" => 10001, "message"=>"商品管理无此商品，请确认后重新上传,商品编码 " . $value];
+                            }
                         }
                     }else{
 //                        if (empty($price_list[$value])){
@@ -267,18 +266,6 @@ class WeiController extends Controller
                 $goods_total_price = $goods_num * $goods_price;
             }
 
-            //多商品 新增价格
-            if($is_add_price == 1){
-                $add_price_data = [
-                    "goods_name" => !empty($goods_model) ? $goods_model : $add_price_goods_sku,
-                    "goods_sku" => $add_price_goods_sku,
-                    "price" => $goods_total_price,
-                    "type" => 2,
-                    "create_time" => date('Y-m-d H:i:s'),
-                    "update_time" => date('Y-m-d H:i:s')
-                ];
-                array_push($add_price_arr,$add_price_data);
-            }
 
             $common_data["total_product_price"] = "";
             if (!empty($goods_total_price) && ($goods_total_price != 0) ){
@@ -322,9 +309,9 @@ class WeiController extends Controller
         $this->commonModel->addRow("order_list", $common_data_arr);
         $this->commonModel->addRow("order_wei", $store_data_arr);
         $this->commonModel->addRow("order_wei_info", $store_info_arr);
-        if(!empty($add_price_arr)){
-            $this->commonModel->addRow("goods_info",$add_price_arr);
-        }
+//        if(!empty($add_price_arr)){
+//            $this->commonModel->addRow("goods_info",$add_price_arr);
+//        }
 //        DB::rollBack();
         return [];
     }

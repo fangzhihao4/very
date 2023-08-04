@@ -487,6 +487,9 @@ class HeadController extends Controller
             if ($filed_name == "product_quantity"){
                 $value_value = $goods_num;
             }
+            if (in_array($filed_name,["recipient","province","city"]) || empty($value_value)){
+                $value_value = "-";
+            }
             if (in_array($filed_name,["total_receivable","total_product_price","product_price"])){
                 $worksheet->setCellValueExplicit([$row_excel , $j], (string)$value_value,PHPExcel_Cell_DataType::TYPE_NUMERIC);
             }else{
