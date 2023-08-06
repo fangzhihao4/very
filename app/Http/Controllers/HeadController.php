@@ -397,11 +397,11 @@ class HeadController extends Controller
                     }
                     $goods_num = !empty($goods_num_arr[$k_g]) ? $goods_num_arr[$k_g] : 0;
                     $goods_all_price = (float)$goods_price * (float)$goods_num;
-                    $worksheet = $this->excelInfo($worksheet, $j, $table_filed_arr, $data_arr, $goods_value, $goods_all_price, (float)$goods_price, $goods_num);
+                    $worksheet = $this->excelInfo($worksheet, $j, $table_filed_arr, $data_arr, $goods_value, $goods_all_price, (float)$goods_price, $goods_num , $goods_all_price);
                     $j++; //从表格第2行开始
                 }
             }else{
-                $worksheet = $this->excelInfo($worksheet, $j, $table_filed_arr, $data_arr, $goods_sku, $goods_all_price,(float)$data_arr["product_price"], $data_arr["product_quantity"]);
+                $worksheet = $this->excelInfo($worksheet, $j, $table_filed_arr, $data_arr, $goods_sku, $goods_all_price,(float)$data_arr["product_price"], $data_arr["product_quantity"],$data_arr["total_receivable"]);
                 $j++; //从表格第2行开始
             }
 
@@ -459,7 +459,7 @@ class HeadController extends Controller
     }
 
 
-    public function excelInfo($worksheet, $j, $table_filed_arr, $data_arr, $goods_sku, $goods_all_price, $goods_price, $goods_num){
+    public function excelInfo($worksheet, $j, $table_filed_arr, $data_arr, $goods_sku, $goods_all_price, $goods_price, $goods_num, $total_receivable){
         $name_store = "牛奶分销";
 //            $name_store = $data_arr["store_name"];
         $worksheet->setCellValueByColumnAndRow(1, $j, $name_store);
@@ -487,7 +487,10 @@ class HeadController extends Controller
             if ($filed_name == "product_quantity"){
                 $value_value = $goods_num;
             }
-            if (in_array($filed_name,["recipient","province","city"]) && empty($value_value)){
+            if ($filed_name == "total_receivable"){
+                $value_value = $total_receivable;
+            }
+            if (in_array($filed_name,["district","province","city"]) && empty($value_value)){
                 $value_value = "-";
             }
             if (in_array($filed_name,["total_receivable","total_product_price","product_price"])){
