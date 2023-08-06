@@ -228,7 +228,7 @@ class WeiController extends Controller
                         $goods_sku_list = explode(";",$value);
                         foreach ($goods_sku_list as $g_s_l_k => $g_s_l_v){
                             if (empty($price_list[$g_s_l_v])){
-                                return ["code" => 10001, "message"=>"商品管理无此商品，请确认后重新上传,商品编码 " . $value];
+                                return ["code" => 10001, "message"=>"商品管理无此商品，请确认后重新上传,商品编码 " . $g_s_l_v];
                             }
                         }
                     }else{
@@ -283,28 +283,28 @@ class WeiController extends Controller
             $store_data["sort"] = $common_data["sort"];
             $store_info["sort"] = $common_data["sort"];
 
-            //已经有订单对应价格
-            if (isset($all_order_no[$common_data["original_order_number"]])){
-                $first_order_total_price = $all_order_no[$common_data["original_order_number"]]; //第一单价格
-                if (isset($repeat_order_no[$common_data["original_order_number"]])){ //是第三单或者更多订单 价格 = 新单价格 + 历史重复单价格
-                    $repeat_order_no[$common_data["original_order_number"]] = (float)$repeat_order_no[$common_data["original_order_number"]] +  (float)$common_data["total_product_price"];
-                }else{//第二单重复 价格= 第一单价格 + 第二单价格
-                    $repeat_order_no[$common_data["original_order_number"]] =  $common_data["total_product_price"] + $first_order_total_price;
-                }
-            }
+//            //已经有订单对应价格
+//            if (isset($all_order_no[$common_data["original_order_number"]])){
+//                $first_order_total_price = $all_order_no[$common_data["original_order_number"]]; //第一单价格
+//                if (isset($repeat_order_no[$common_data["original_order_number"]])){ //是第三单或者更多订单 价格 = 新单价格 + 历史重复单价格
+//                    $repeat_order_no[$common_data["original_order_number"]] = (float)$repeat_order_no[$common_data["original_order_number"]] +  (float)$common_data["total_product_price"];
+//                }else{//第二单重复 价格= 第一单价格 + 第二单价格
+//                    $repeat_order_no[$common_data["original_order_number"]] =  $common_data["total_product_price"] + $first_order_total_price;
+//                }
+//            }
             //订单对应价格
-            $all_order_no[$common_data["original_order_number"]] = $common_data["total_product_price"];
+//            $all_order_no[$common_data["original_order_number"]] = $common_data["total_product_price"];
 
             array_push($common_data_arr, $common_data);
             array_push($store_data_arr, $store_data);
             array_push($store_info_arr, $store_info);
         }
 
-        foreach ($common_data_arr as $common_key => $common_value){
-            if (isset($repeat_order_no[$common_value["original_order_number"]])){
-                $common_data_arr[$common_key]["total_receivable"] = $repeat_order_no[$common_value["original_order_number"]];
-            }
-        }
+//        foreach ($common_data_arr as $common_key => $common_value){
+//            if (isset($repeat_order_no[$common_value["original_order_number"]])){
+//                $common_data_arr[$common_key]["total_receivable"] = $repeat_order_no[$common_value["original_order_number"]];
+//            }
+//        }
 //        DB::beginTransaction();
         $this->commonModel->addRow("order_list", $common_data_arr);
         $this->commonModel->addRow("order_wei", $store_data_arr);
