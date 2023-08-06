@@ -374,6 +374,7 @@ class HeadController extends Controller
         $j = 2;//从表格第2行开始
 
         $upload_ids = [];
+        $good_all_info = [];
         for ($i = 0; $i < $len; $i++) {
 
             $data_arr = (array)$all_info[$i];
@@ -389,15 +390,32 @@ class HeadController extends Controller
                     $goods_num_arr = explode(";", $wei_info[0]->number_of_product_pieces);
                 }
                 $goods_sku_arr = explode(";", $goods_sku);
+                $excel_arr = [];
+                $total_receivable = 0;
                 foreach ($goods_sku_arr as $k_g =>  $goods_value){
-                    $goods_info = $this->commonModel->getRow("goods_info", ["goods_sku" => $goods_value, "type" => 2]);
+                    if (empty($good_all_info[$goods_value])){
+                        $goods_info = $this->commonModel->getRow("goods_info", ["goods_sku" => $goods_value, "type" => 2]);
+                        $good_all_info[$goods_value] = $goods_info;
+                    }else{
+                        $goods_info = $good_all_info[$goods_value];
+                    }
                     $goods_price = 0;
                     if (!empty($goods_info) && !empty($goods_info[0])){
                         $goods_price = (float)$goods_info[0]->price;
                     }
                     $goods_num = !empty($goods_num_arr[$k_g]) ? $goods_num_arr[$k_g] : 0;
                     $goods_all_price = (float)$goods_price * (float)$goods_num;
-                    $worksheet = $this->excelInfo($worksheet, $j, $table_filed_arr, $data_arr, $goods_value, $goods_all_price, (float)$goods_price, $goods_num , $goods_all_price);
+                    $excel_data = [
+                        'goods_value' => $goods_value,
+                        'goods_all_price' => $goods_all_price,
+                        'goods_price' => $goods_price,
+                        'goods_num' => $goods_num
+                    ];
+                    $excel_arr[] = $excel_data;
+                    $total_receivable = $total_receivable + $goods_all_price;
+                }
+                foreach ($excel_arr as $excel_key => $excel_info){
+                    $worksheet = $this->excelInfo($worksheet, $j, $table_filed_arr, $data_arr, $excel_info['goods_value'], $excel_info['goods_all_price'], (float)$excel_info['goods_price'], $excel_info['goods_num'] , $total_receivable);
                     $j++; //从表格第2行开始
                 }
             }else{
